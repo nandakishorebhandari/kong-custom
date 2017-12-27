@@ -1,0 +1,17 @@
+version: '2'
+services:
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - 6379:6379
+  consul:
+    container_name: consul
+    image: consul
+    ports:
+      - 8600:8600 #dns
+      - 8500:8500 #http
+      - 8400:8400 #cli-rpc
+      - 8300:8300 #srv-rpc
+      - 8301:8301 #Serf LAN
+      - 8302:8302 #Serf WAN
