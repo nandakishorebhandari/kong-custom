@@ -29,8 +29,12 @@ add_plu=$(curl -s -i -o /dev/null -w  "%{http_code}" -X POST http://localhost:80
  fi
 }
 
-DOCKER_HOST="192.168.1.100"
-# DOCKER_HOST="192.168.2.5"
+DOCKER_HOST=$(ip route get 1 | awk '{print $NF;exit}')
+# DOCKER_HOST="192.168.1.146"
+# DOCKER_HOST="192.168.1.146"
+# DOCKER_HOST="192.168.0.103"
+#  DOCKER_HOST="192.168.2.8";
+
 
 echo 'Waiting for Kong to start...'
 
@@ -45,8 +49,8 @@ add_api user		"http://$DOCKER_HOST:30005" /user
 add_api case		"http://$DOCKER_HOST:30002" /case
 add_api scheduler	"http://$DOCKER_HOST:30003" /scheduler
 add_api resource	"http://$DOCKER_HOST:30004" /resource
-add_api chat-proxy	"http://$DOCKER_HOST:30006" /chat
-add_api file	"http://$DOCKER_HOST:30007" /file
+add_api chat-proxy	"http://$DOCKER_HOST:8082" /chat
+add_api file	    "http://$DOCKER_HOST:30007" /file
 
 # Add cors API
 add_plugin

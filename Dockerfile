@@ -9,9 +9,9 @@ COPY nginx/default.key /usr/local/kong/ssl/default.key
 
 
 #ENTRYPOINT ["/docker-entrypoint.sh"]
-# CMD ["kong", "start", "-vv", "--nginx-conf", "/etc/kong/insighter-nginx.conf" ]
-CMD ["kong", "migrations", "up"]
-CMD ["kong", "start", "-vv"]
+CMD ["kong", "start", "-vv", "--nginx-conf", "/etc/kong/insighter-nginx.conf" ]
+# CMD ["kong", "migrations", "up"]
+# CMD ["kong", "start", "-vv"]
 
 
 # FROM kong

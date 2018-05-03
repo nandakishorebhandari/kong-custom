@@ -1,10 +1,9 @@
 #!/bin/sh
-# sudo bash ./kong-start.sh
 
-echo "remove existing dockers"
-docker stop $(docker ps -aq)
-docker rm $(docker ps -aq)
-echo "docker start"
+# echo "remove existing dockers"
+# docker stop $(docker ps -aq)
+# docker rm $(docker ps -aq)
+# echo "docker start"
 
 #2. initialize environment
 docker-compose down
@@ -15,5 +14,4 @@ docker-compose up --force-recreate -d
 echo "after docker compose up"
 cd ..
 # terminator
-
-sudo bash ./docker-entrypoint.sh
+bash docker-entrypoint.sh
