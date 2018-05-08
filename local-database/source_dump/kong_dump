@@ -1,0 +1,852 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.6.6
+-- Dumped by pg_dump version 9.6.8
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- Name: increment_rate_limits(uuid, text, text, timestamp with time zone, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.increment_rate_limits(a_id uuid, i text, p text, p_date timestamp with time zone, v integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+      BEGIN
+        LOOP
+          UPDATE ratelimiting_metrics SET value = value + v WHERE api_id = a_id AND identifier = i AND period = p AND period_date = p_date;
+          IF found then
+            RETURN;
+          END IF;
+
+          BEGIN
+            INSERT INTO ratelimiting_metrics(api_id, period, period_date, identifier, value) VALUES(a_id, p, p_date, i, v);
+            RETURN;
+          EXCEPTION WHEN unique_violation THEN
+
+          END;
+        END LOOP;
+      END;
+      $$;
+
+
+--
+-- Name: increment_response_rate_limits(uuid, text, text, timestamp with time zone, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.increment_response_rate_limits(a_id uuid, i text, p text, p_date timestamp with time zone, v integer) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+      BEGIN
+        LOOP
+          UPDATE response_ratelimiting_metrics SET value = value + v WHERE api_id = a_id AND identifier = i AND period = p AND period_date = p_date;
+          IF found then
+            RETURN;
+          END IF;
+
+          BEGIN
+            INSERT INTO response_ratelimiting_metrics(api_id, period, period_date, identifier, value) VALUES(a_id, p, p_date, i, v);
+            RETURN;
+          EXCEPTION WHEN unique_violation THEN
+
+          END;
+        END LOOP;
+      END;
+      $$;
+
+
+--
+-- Name: upsert_schema_migrations(text, character varying); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.upsert_schema_migrations(identifier text, migration_name character varying) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+      DECLARE
+      BEGIN
+          UPDATE schema_migrations SET migrations = array_append(migrations, migration_name) WHERE id = identifier;
+          IF NOT FOUND THEN
+          INSERT INTO schema_migrations(id, migrations) VALUES(identifier, ARRAY[migration_name]);
+          END IF;
+      END;
+      $$;
+
+
+--
+-- Name: upsert_ttl(text, uuid, text, text, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.upsert_ttl(v_primary_key_value text, v_primary_uuid_value uuid, v_primary_key_name text, v_table_name text, v_expire_at timestamp without time zone) RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+      BEGIN
+        LOOP
+          UPDATE ttls SET expire_at = v_expire_at WHERE primary_key_value = v_primary_key_value AND table_name = v_table_name;
+          IF found then
+            RETURN;
+          END IF;
+          BEGIN
+            INSERT INTO ttls(primary_key_value, primary_uuid_value, primary_key_name, table_name, expire_at) VALUES(v_primary_key_value, v_primary_uuid_value, v_primary_key_name, v_table_name, v_expire_at);
+            RETURN;
+          EXCEPTION WHEN unique_violation THEN
+            -- Do nothing, and loop to try the UPDATE again.
+          END;
+        END LOOP;
+      END;
+      $$;
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: acls; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.acls (
+    id uuid NOT NULL,
+    consumer_id uuid,
+    "group" text,
+    created_at timestamp without time zone DEFAULT timezone('utc'::text, ('now'::text)::timestamp(0) with time zone)
+);
+
+
+--
+-- Name: apis; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.apis (
+    id uuid NOT NULL,
+    name text,
+    request_host text,
+    request_path text,
+    strip_request_path boolean NOT NULL,
+    upstream_url text,
+    preserve_host boolean NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('utc'::text, ('now'::text)::timestamp(0) with time zone)
+);
+
+
+--
+-- Name: basicauth_credentials; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.basicauth_credentials (
+    id uuid NOT NULL,
+    consumer_id uuid,
+    username text,
+    password text,
+    created_at timestamp without time zone DEFAULT timezone('utc'::text, ('now'::text)::timestamp(0) with time zone)
+);
+
+
+--
+-- Name: consumers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.consumers (
+    id uuid NOT NULL,
+    custom_id text,
+    username text,
+    created_at timestamp without time zone DEFAULT timezone('utc'::text, ('now'::text)::timestamp(0) with time zone)
+);
+
+
+--
+-- Name: hmacauth_credentials; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.hmacauth_credentials (
+    id uuid NOT NULL,
+    consumer_id uuid,
+    username text,
+    secret text,
+    created_at timestamp without time zone DEFAULT timezone('utc'::text, ('now'::text)::timestamp(0) with time zone)
+);
+
+
+--
+-- Name: jwt_secrets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.jwt_secrets (
+    id uuid NOT NULL,
+    consumer_id uuid,
+    key text,
+    secret text,
+    created_at timestamp without time zone DEFAULT timezone('utc'::text, ('now'::text)::timestamp(0) with time zone),
+    algorithm text,
+    rsa_public_key text
+);
+
+
+--
+-- Name: keyauth_credentials; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.keyauth_credentials (
+    id uuid NOT NULL,
+    consumer_id uuid,
+    key text,
+    created_at timestamp without time zone DEFAULT timezone('utc'::text, ('now'::text)::timestamp(0) with time zone)
+);
+
+
+--
+-- Name: nodes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.nodes (
+    name text NOT NULL,
+    cluster_listening_address text,
+    created_at timestamp without time zone DEFAULT timezone('utc'::text, ('now'::text)::timestamp(0) with time zone)
+);
+
+
+--
+-- Name: oauth2_authorization_codes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth2_authorization_codes (
+    id uuid NOT NULL,
+    code text,
+    authenticated_userid text,
+    scope text,
+    created_at timestamp without time zone DEFAULT timezone('utc'::text, ('now'::text)::timestamp(0) with time zone),
+    credential_id uuid
+);
+
+
+--
+-- Name: oauth2_credentials; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth2_credentials (
+    id uuid NOT NULL,
+    name text,
+    consumer_id uuid,
+    client_id text,
+    client_secret text,
+    redirect_uri text,
+    created_at timestamp without time zone DEFAULT timezone('utc'::text, ('now'::text)::timestamp(0) with time zone)
+);
+
+
+--
+-- Name: oauth2_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth2_tokens (
+    id uuid NOT NULL,
+    credential_id uuid,
+    access_token text,
+    token_type text,
+    refresh_token text,
+    expires_in integer,
+    authenticated_userid text,
+    scope text,
+    created_at timestamp without time zone DEFAULT timezone('utc'::text, ('now'::text)::timestamp(0) with time zone)
+);
+
+
+--
+-- Name: plugins; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.plugins (
+    id uuid NOT NULL,
+    name text NOT NULL,
+    api_id uuid,
+    consumer_id uuid,
+    config json NOT NULL,
+    enabled boolean NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('utc'::text, ('now'::text)::timestamp(0) with time zone)
+);
+
+
+--
+-- Name: ratelimiting_metrics; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ratelimiting_metrics (
+    api_id uuid NOT NULL,
+    identifier text NOT NULL,
+    period text NOT NULL,
+    period_date timestamp without time zone NOT NULL,
+    value integer
+);
+
+
+--
+-- Name: response_ratelimiting_metrics; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.response_ratelimiting_metrics (
+    api_id uuid NOT NULL,
+    identifier text NOT NULL,
+    period text NOT NULL,
+    period_date timestamp without time zone NOT NULL,
+    value integer
+);
+
+
+--
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.schema_migrations (
+    id text NOT NULL,
+    migrations character varying(100)[]
+);
+
+
+--
+-- Name: ttls; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ttls (
+    primary_key_value text NOT NULL,
+    primary_uuid_value uuid,
+    table_name text NOT NULL,
+    primary_key_name text NOT NULL,
+    expire_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: acls acls_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.acls
+    ADD CONSTRAINT acls_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: apis apis_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.apis
+    ADD CONSTRAINT apis_name_key UNIQUE (name);
+
+
+--
+-- Name: apis apis_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.apis
+    ADD CONSTRAINT apis_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: apis apis_request_host_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.apis
+    ADD CONSTRAINT apis_request_host_key UNIQUE (request_host);
+
+
+--
+-- Name: apis apis_request_path_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.apis
+    ADD CONSTRAINT apis_request_path_key UNIQUE (request_path);
+
+
+--
+-- Name: basicauth_credentials basicauth_credentials_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basicauth_credentials
+    ADD CONSTRAINT basicauth_credentials_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: consumers consumers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.consumers
+    ADD CONSTRAINT consumers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: consumers consumers_username_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.consumers
+    ADD CONSTRAINT consumers_username_key UNIQUE (username);
+
+
+--
+-- Name: hmacauth_credentials hmacauth_credentials_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.hmacauth_credentials
+    ADD CONSTRAINT hmacauth_credentials_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: hmacauth_credentials hmacauth_credentials_username_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.hmacauth_credentials
+    ADD CONSTRAINT hmacauth_credentials_username_key UNIQUE (username);
+
+
+--
+-- Name: jwt_secrets jwt_secrets_key_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jwt_secrets
+    ADD CONSTRAINT jwt_secrets_key_key UNIQUE (key);
+
+
+--
+-- Name: jwt_secrets jwt_secrets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jwt_secrets
+    ADD CONSTRAINT jwt_secrets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jwt_secrets jwt_secrets_secret_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jwt_secrets
+    ADD CONSTRAINT jwt_secrets_secret_key UNIQUE (secret);
+
+
+--
+-- Name: keyauth_credentials keyauth_credentials_key_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.keyauth_credentials
+    ADD CONSTRAINT keyauth_credentials_key_key UNIQUE (key);
+
+
+--
+-- Name: keyauth_credentials keyauth_credentials_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.keyauth_credentials
+    ADD CONSTRAINT keyauth_credentials_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: nodes nodes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.nodes
+    ADD CONSTRAINT nodes_pkey PRIMARY KEY (name);
+
+
+--
+-- Name: oauth2_authorization_codes oauth2_authorization_codes_code_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_authorization_codes
+    ADD CONSTRAINT oauth2_authorization_codes_code_key UNIQUE (code);
+
+
+--
+-- Name: oauth2_authorization_codes oauth2_authorization_codes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_authorization_codes
+    ADD CONSTRAINT oauth2_authorization_codes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth2_credentials oauth2_credentials_client_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_credentials
+    ADD CONSTRAINT oauth2_credentials_client_id_key UNIQUE (client_id);
+
+
+--
+-- Name: oauth2_credentials oauth2_credentials_client_secret_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_credentials
+    ADD CONSTRAINT oauth2_credentials_client_secret_key UNIQUE (client_secret);
+
+
+--
+-- Name: oauth2_credentials oauth2_credentials_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_credentials
+    ADD CONSTRAINT oauth2_credentials_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth2_tokens oauth2_tokens_access_token_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_tokens
+    ADD CONSTRAINT oauth2_tokens_access_token_key UNIQUE (access_token);
+
+
+--
+-- Name: oauth2_tokens oauth2_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_tokens
+    ADD CONSTRAINT oauth2_tokens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth2_tokens oauth2_tokens_refresh_token_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_tokens
+    ADD CONSTRAINT oauth2_tokens_refresh_token_key UNIQUE (refresh_token);
+
+
+--
+-- Name: plugins plugins_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plugins
+    ADD CONSTRAINT plugins_pkey PRIMARY KEY (id, name);
+
+
+--
+-- Name: ratelimiting_metrics ratelimiting_metrics_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ratelimiting_metrics
+    ADD CONSTRAINT ratelimiting_metrics_pkey PRIMARY KEY (api_id, identifier, period_date, period);
+
+
+--
+-- Name: response_ratelimiting_metrics response_ratelimiting_metrics_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.response_ratelimiting_metrics
+    ADD CONSTRAINT response_ratelimiting_metrics_pkey PRIMARY KEY (api_id, identifier, period_date, period);
+
+
+--
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ttls ttls_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ttls
+    ADD CONSTRAINT ttls_pkey PRIMARY KEY (primary_key_value, table_name);
+
+
+--
+-- Name: acls_consumer_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX acls_consumer_id ON public.acls USING btree (consumer_id);
+
+
+--
+-- Name: acls_group; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX acls_group ON public.acls USING btree ("group");
+
+
+--
+-- Name: apis_name_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX apis_name_idx ON public.apis USING btree (name);
+
+
+--
+-- Name: apis_request_host_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX apis_request_host_idx ON public.apis USING btree (request_host);
+
+
+--
+-- Name: apis_request_path_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX apis_request_path_idx ON public.apis USING btree (request_path);
+
+
+--
+-- Name: basicauth_consumer_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX basicauth_consumer_id_idx ON public.basicauth_credentials USING btree (consumer_id);
+
+
+--
+-- Name: basicauth_username_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX basicauth_username_idx ON public.basicauth_credentials USING btree (username);
+
+
+--
+-- Name: custom_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX custom_id_idx ON public.consumers USING btree (custom_id);
+
+
+--
+-- Name: hmacauth_credentials_consumer_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX hmacauth_credentials_consumer_id ON public.hmacauth_credentials USING btree (consumer_id);
+
+
+--
+-- Name: hmacauth_credentials_username; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX hmacauth_credentials_username ON public.hmacauth_credentials USING btree (username);
+
+
+--
+-- Name: jwt_secrets_consumer_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX jwt_secrets_consumer_id ON public.jwt_secrets USING btree (consumer_id);
+
+
+--
+-- Name: jwt_secrets_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX jwt_secrets_key ON public.jwt_secrets USING btree (key);
+
+
+--
+-- Name: jwt_secrets_secret; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX jwt_secrets_secret ON public.jwt_secrets USING btree (secret);
+
+
+--
+-- Name: keyauth_consumer_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX keyauth_consumer_idx ON public.keyauth_credentials USING btree (consumer_id);
+
+
+--
+-- Name: keyauth_key_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX keyauth_key_idx ON public.keyauth_credentials USING btree (key);
+
+
+--
+-- Name: nodes_cluster_listening_address_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX nodes_cluster_listening_address_idx ON public.nodes USING btree (cluster_listening_address);
+
+
+--
+-- Name: oauth2_accesstoken_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oauth2_accesstoken_idx ON public.oauth2_tokens USING btree (access_token);
+
+
+--
+-- Name: oauth2_authorization_userid_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oauth2_authorization_userid_idx ON public.oauth2_authorization_codes USING btree (authenticated_userid);
+
+
+--
+-- Name: oauth2_autorization_code_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oauth2_autorization_code_idx ON public.oauth2_authorization_codes USING btree (code);
+
+
+--
+-- Name: oauth2_credentials_client_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oauth2_credentials_client_idx ON public.oauth2_credentials USING btree (client_id);
+
+
+--
+-- Name: oauth2_credentials_consumer_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oauth2_credentials_consumer_idx ON public.oauth2_credentials USING btree (consumer_id);
+
+
+--
+-- Name: oauth2_credentials_secret_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oauth2_credentials_secret_idx ON public.oauth2_credentials USING btree (client_secret);
+
+
+--
+-- Name: oauth2_token_refresh_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oauth2_token_refresh_idx ON public.oauth2_tokens USING btree (refresh_token);
+
+
+--
+-- Name: oauth2_token_userid_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oauth2_token_userid_idx ON public.oauth2_tokens USING btree (authenticated_userid);
+
+
+--
+-- Name: plugins_api_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX plugins_api_idx ON public.plugins USING btree (api_id);
+
+
+--
+-- Name: plugins_consumer_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX plugins_consumer_idx ON public.plugins USING btree (consumer_id);
+
+
+--
+-- Name: plugins_name_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX plugins_name_idx ON public.plugins USING btree (name);
+
+
+--
+-- Name: username_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX username_idx ON public.consumers USING btree (lower(username));
+
+
+--
+-- Name: acls acls_consumer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.acls
+    ADD CONSTRAINT acls_consumer_id_fkey FOREIGN KEY (consumer_id) REFERENCES public.consumers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: basicauth_credentials basicauth_credentials_consumer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.basicauth_credentials
+    ADD CONSTRAINT basicauth_credentials_consumer_id_fkey FOREIGN KEY (consumer_id) REFERENCES public.consumers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: hmacauth_credentials hmacauth_credentials_consumer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.hmacauth_credentials
+    ADD CONSTRAINT hmacauth_credentials_consumer_id_fkey FOREIGN KEY (consumer_id) REFERENCES public.consumers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: jwt_secrets jwt_secrets_consumer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.jwt_secrets
+    ADD CONSTRAINT jwt_secrets_consumer_id_fkey FOREIGN KEY (consumer_id) REFERENCES public.consumers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: keyauth_credentials keyauth_credentials_consumer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.keyauth_credentials
+    ADD CONSTRAINT keyauth_credentials_consumer_id_fkey FOREIGN KEY (consumer_id) REFERENCES public.consumers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth2_authorization_codes oauth2_authorization_codes_credential_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_authorization_codes
+    ADD CONSTRAINT oauth2_authorization_codes_credential_id_fkey FOREIGN KEY (credential_id) REFERENCES public.oauth2_credentials(id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth2_credentials oauth2_credentials_consumer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_credentials
+    ADD CONSTRAINT oauth2_credentials_consumer_id_fkey FOREIGN KEY (consumer_id) REFERENCES public.consumers(id) ON DELETE CASCADE;
+
+
+--
+-- Name: oauth2_tokens oauth2_tokens_credential_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_tokens
+    ADD CONSTRAINT oauth2_tokens_credential_id_fkey FOREIGN KEY (credential_id) REFERENCES public.oauth2_credentials(id) ON DELETE CASCADE;
+
+
+--
+-- Name: plugins plugins_api_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plugins
+    ADD CONSTRAINT plugins_api_id_fkey FOREIGN KEY (api_id) REFERENCES public.apis(id) ON DELETE CASCADE;
+
+
+--
+-- Name: plugins plugins_consumer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.plugins
+    ADD CONSTRAINT plugins_consumer_id_fkey FOREIGN KEY (consumer_id) REFERENCES public.consumers(id) ON DELETE CASCADE;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

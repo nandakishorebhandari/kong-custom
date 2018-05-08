@@ -1,0 +1,2601 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.6.6
+-- Dumped by pg_dump version 9.6.8
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: in_condition; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.in_condition (
+    condition_id bigint NOT NULL,
+    name text NOT NULL
+);
+
+
+--
+-- Name: in_condition_condition_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.in_condition_condition_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: in_condition_condition_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.in_condition_condition_id_seq OWNED BY public.in_condition.condition_id;
+
+
+--
+-- Name: in_history; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.in_history (
+    user_id bigint NOT NULL,
+    condition_id bigint NOT NULL
+);
+
+
+--
+-- Name: in_invites; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.in_invites (
+    invite_id character varying(16) NOT NULL,
+    code_type text NOT NULL,
+    email text,
+    valid_from timestamp without time zone NOT NULL,
+    valid_to timestamp without time zone NOT NULL,
+    status text NOT NULL,
+    user_id bigint,
+    max_usage bigint,
+    team_id text,
+    user_type text,
+    name text
+);
+
+
+--
+-- Name: in_preference; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.in_preference (
+    preference_id bigint NOT NULL,
+    name text NOT NULL
+);
+
+
+--
+-- Name: in_preference_preference_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.in_preference_preference_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: in_preference_preference_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.in_preference_preference_id_seq OWNED BY public.in_preference.preference_id;
+
+
+--
+-- Name: in_user_member; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.in_user_member (
+    user_id bigint NOT NULL,
+    birth_date date NOT NULL,
+    gender character(1) NOT NULL,
+    lang character(5) NOT NULL,
+    invite_id character varying(16),
+    city text,
+    state text,
+    province text,
+    country text,
+    zip_code text,
+    avatar_url text,
+    first_name text DEFAULT 'Firstname'::text NOT NULL,
+    middle_name text,
+    last_name text DEFAULT 'Lastname'::text NOT NULL
+);
+
+
+--
+-- Name: in_user_preferences; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.in_user_preferences (
+    user_id bigint NOT NULL,
+    preference_id bigint NOT NULL
+);
+
+
+--
+-- Name: in_user_provider; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.in_user_provider (
+    user_id bigint NOT NULL,
+    birth_date date NOT NULL,
+    gender character(1) NOT NULL,
+    lang character(5) NOT NULL,
+    invite_id character varying(16),
+    avatar_url text,
+    first_name text DEFAULT 'Firstname'::text NOT NULL,
+    middle_name text,
+    last_name text DEFAULT 'Lastname'::text NOT NULL,
+    location text NOT NULL,
+    timezone text NOT NULL,
+    address text NOT NULL,
+    zip_code text NOT NULL,
+    city text NOT NULL,
+    country text NOT NULL,
+    phone_number text NOT NULL,
+    speciality text NOT NULL,
+    npi_number text NOT NULL,
+    state_licensed text NOT NULL,
+    dea_number text NOT NULL,
+    board_certifications text NOT NULL,
+    medical_license text NOT NULL,
+    state text DEFAULT 'Unspecified'::text NOT NULL
+);
+
+
+--
+-- Name: in_condition condition_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_condition ALTER COLUMN condition_id SET DEFAULT nextval('public.in_condition_condition_id_seq'::regclass);
+
+
+--
+-- Name: in_preference preference_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_preference ALTER COLUMN preference_id SET DEFAULT nextval('public.in_preference_preference_id_seq'::regclass);
+
+
+--
+-- Data for Name: in_condition; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.in_condition (condition_id, name) FROM stdin;
+1	Acute Lymphocytic Leukemia
+2	Abortion
+3	Abnormal heart sounds
+4	Abdominal pain
+5	Acid Reflux
+6	Access to Health Services 
+7	Acoustic Neuroma
+8	Acne
+9	Acquired hypothyroidism
+10	Actinic and seborrheic keratosis
+11	Acupuncture
+12	Acute bronchitis
+13	Acute laryngopharyngitis
+14	Acute maxillary sinusitis
+15	Acute Myeloid Leukemia
+16	Acute pharyngitis
+17	Addison Disease
+18	ADHD
+19	Acute Lymphocytic Leukemia
+20	Adhesions
+21	Adolescent Health 
+22	Adolescent Health 
+23	Adoption
+24	Advance Directives
+25	Adrenal Gland Disorders
+26	Affordable Care Act 
+27	Adrenal Gland Cancer
+28	African American Health
+29	After Surgery
+30	Agoraphobia
+31	AIDS
+32	Alaska Native Health 
+33	Air Pollution
+34	Alcohol Abuse in Pregnancy 
+35	Alcohol
+36	Alcohol dependence syndrome
+37	Allergic rhinitis
+38	Alcohol Dependence
+39	Alcohol and Youth 
+40	Alternative Medicine
+41	Alzheimer's Caregivers
+42	Alzheimer's Disease
+43	Amblyopia
+44	Anabolic Steroids
+45	Anal and rectal disease
+46	Anaphylaxis
+47	Anatomy
+48	AML
+49	Angina pectoris
+50	Anemias
+51	Animal Bites
+52	Animal Diseases and Your Health
+53	Anorexia Nervosa 
+54	Ansomia
+55	Anthrax
+56	Anticoagulants 
+57	Antidepressants
+58	Antihypertensive Medicines 
+59	Antibiotics
+60	Antioxidants
+61	Aoritc Stenosis
+62	Aortic Aneursym
+63	Arthritis
+64	Anxiety
+65	Arthritis, Osteoporosis, and Chronic Back Conditions 
+66	Artificial Limbs
+67	Asian American Health
+68	Aspergillosis
+69	Assisted Living
+70	Assisted Reproductive Technology
+71	Assistive Devices
+72	Asthma in Children
+73	Asthma
+74	Atherosclerosis
+75	Athlete's Foot
+76	Atrial Fibrillation
+77	Attention deficit disorder
+78	Autism Spectrum Disorder (ASD)
+79	Autonomic Nervous System Disorders
+80	Avascular Necrosis
+81	Attention Deficit Hyperactivity Disorder
+82	Autoimmune Diseases
+83	Avian Influenza
+84	Babesiosis
+85	Baby Care
+86	Back Injuries
+87	Back pain
+88	Bad Breath
+89	Balance Problems
+90	Barotrauma
+91	Baseball or softball
+92	Basketball
+93	Bed Bugs
+94	Bedwetting
+95	Behcet's Syndrome
+96	Bell's Palsy
+97	Bereavement
+98	Biking
+99	Bile Duct Cancer
+100	Benign Tumors
+101	Bile Duct Diseases
+102	Biodefense and Bioterrorism
+103	Biopsy
+104	Bipolar Disorder
+105	Bird Flu
+106	Birth Defects
+107	Birth Weight
+108	Birthmarks
+109	Bladder Cancer
+110	Birth Control
+111	Bladder Diseases
+112	Bleeding
+113	Bleeding Disorders
+114	Blisters
+115	Blood
+116	Blood Clots
+117	Blood Count Tests
+118	Blood Disorders
+119	Blood Disorders and Blood Safety  New
+120	Blood Pressure Medicines
+121	Blood Sugar
+122	Blood Thinners
+123	Blood Transfusion and Donation
+124	Boating
+125	Body Weight
+126	Bone Cancer
+127	Bone Density
+128	Bone Diseases
+129	Bone Infections
+130	Bone Marrow Diseases
+131	Bone Marrow Transplantation
+132	Botox
+133	Botulism
+134	Bone Grafts
+135	Bowel Incontinence
+136	Bowel Movement
+137	Brachial Plexus Injuries
+138	Brain Aneurysm
+139	Brain Diseases
+140	Brain Malformations
+141	Brain Tumors
+142	Breast Cancer
+143	Breast Diseases
+144	Breast Reconstruction
+145	Breastfeeding
+147	Bronchial Disorders
+149	Bullying
+151	Burns
+153	Caffeine
+155	Calculus of kidney and ureter
+157	Cancer
+159	Cancer Alternative Therapies
+161	Cancer--Living with Cancer
+163	Cancer Immunotherapy
+146	Breathing Problems
+148	Bruises
+150	Bungee jumping
+152	Bursitis
+154	Calcium
+156	Campylobacter Infections
+158	Cancer 
+160	Cancer Chemotherapy
+162	Cancer in Children
+164	Candidiasis
+165	Carbohydrate Metabolism Disorders
+166	Canker Sores
+167	Carbohydrates
+168	Carbon Monoxide Poisoning
+169	Carcinoid Tumors
+170	Cardiac Arrest
+171	Cardiac dysrhythmias
+172	Cardiac Rehabilitation
+173	Cardiomyopathy
+174	Caregivers
+175	Carotid Artery Disease
+176	Carpal tunnel syndrome
+177	Cat Scratch Disease
+178	Cartilage Disorders
+179	Cataract
+180	Celiac Disease
+181	Cellulitis
+182	Cellulitis and abscess
+183	Cerebellar Disorders
+184	Cerebral Palsy
+185	Cerebrovascular disease
+186	Cervical Cancer Screening
+187	Cervix Disorders
+188	Cervical Cancer
+189	Cesarean Section
+190	Chagas Disease
+191	Chemical Emergencies
+192	Chest Injuries and Disorders
+193	Chest pain
+194	Charcot-Marie-Tooth Disease
+195	Chiari Malformation
+196	Chickenpox
+197	Chikungunya
+198	Child Abuse
+199	Child Behavior Disorders
+200	Child Care
+201	Child Dental Health
+202	Child Development
+203	Child Nutrition
+204	Child Safety
+205	Child Sexual Abuse
+206	Childbirth
+207	Childbirth Problems
+208	Child Mental Health
+209	Childhood Brain Tumors
+210	Childhood Immunization
+211	Childhood Leukemia
+212	Children's Health
+213	Children's Page
+214	Chiropractic
+215	Chlamydia
+216	Chlamydia Infections
+217	Choking
+218	Cholera
+219	Cholesterol
+220	Choosing a Doctor or Health Care Service
+221	Chronic Bronchitis
+222	Chronic Fatigue Syndrome
+223	Chronic Kidney Disease
+224	Chronic Myeloid Leukemia
+225	Chronic Pain
+226	Chronic Kidney Disease 
+227	Chronic Lymphocytic Leukemia
+228	Chronic sinusitis
+229	Circumcision
+230	Cirrhosis
+231	Cleft Lip and Palate
+232	Climate Change
+233	Clinical Trials
+234	Cloning
+235	Clostridium Difficile Infections
+236	Club Drugs
+237	Cocaine
+238	Cochlear Implants
+239	Cold and Cough Medicines
+240	Cold Sores
+241	Collapsed Lung
+242	College Health
+243	Colonic Diseases
+244	Colonic Polyps
+245	Colonoscopy
+246	Color Blindness
+247	Colorectal Cancer
+248	Coma
+249	Common Cold
+250	Complementary and Integrative Medicine
+251	Common Infant and Newborn Problems
+252	Complex Regional Pain Syndrome
+253	Complications of pregnancy, childbirth, and the puerperium
+254	Concussion
+255	Congenital anomalies
+256	Congestive heart failure
+257	Compulsive Gambling
+258	Conjunctivitis
+259	Congenital Heart Defects
+260	Connective Tissue Disorders
+261	Constipation
+262	Contact dermatitis and other eczema
+263	Contusion with intact skin surface
+264	Convulsions
+265	COPD
+266	Coping with Chronic Illness
+267	Coping with Disasters
+268	Corns and Calluses
+269	Corns, callosities, other hypertrophic and atrophic skin
+270	Coronary Artery Bypass Surgery
+271	Corneal Disorders
+272	Coronary Artery Disease
+273	Coronary atherosclerosis
+274	Cosmetic Dentistry
+275	Cosmetics
+276	Cough
+277	Coronavirus Infections
+278	CPR
+279	Craniofacial Abnormalities
+280	Creatinine
+281	Creutzfeldt-Jakob Disease
+282	Critical Care
+283	Crohn's Disease
+284	Croup
+285	Cryptosporidiosis
+286	CT Scans
+287	Cystic Fibrosis
+288	Cystitis and other disorders of the bladder
+289	Cytomegalovirus Infections
+290	Cushing's Syndrome
+291	Dandruff, Cradle Cap, and Other Scalp Conditions
+292	DASH Diet
+293	Deep Vein Thrombosis
+295	Delirium
+297	Dementias, Including Alzheimer's Disease  New
+299	Dental Health
+301	Dentures
+303	Depressive disorder
+305	Dermatophytosis
+307	Diabetes
+309	Diabetes and Pregnancy
+311	Diabetes in Children and Teens
+313	Diabetes Medicines
+315	Diabetes Type 2
+317	Diabetic Eye Problems
+319	Diabetic Kidney Problems
+321	Diabetic Nerve Problems
+294	Dehydration
+296	Degenerative Nerve Diseases
+298	Dengue
+300	Dementia
+302	Depression
+304	Derangements and other unspecified disorders of joints
+306	Developmental Disabilities
+308	Diabetes 
+310	Diabetes Complications
+312	Diabetes Insipidus
+314	Diabetes Type 1
+316	Diabetic Diet
+318	Diabetic Foot
+320	Diabetic Heart Disease
+322	Diagnostic Imaging
+323	Diarrhea
+324	Dialysis
+325	Dietary Fats
+326	Dietary Proteins
+327	Diets
+328	Dietary Fiber
+329	Digestive Diseases
+330	Diphtheria
+331	Disabilities
+332	Disaster Preparation and Recovery
+333	Diseases of the arteries, arterioles and capillaries
+334	Dietary Supplements
+335	Disability and Health 
+336	Diseases of the circulatory system
+337	Diseases of the digestive system
+338	Diseases of the musculoskeletal system and connective tissue
+339	Diseases of the blood and blood-forming organs
+340	Diseases of the genitourinary system
+341	Diseases of the skin and subcutaneous tissue
+342	Diseases of the teeth and supporting structures
+343	Diseases of the nervous system and sense organs
+344	Diseases of the respiratory system
+345	Dislocations
+346	Disorder of eyelids
+347	Disorder of gallbladder and biliary tract
+348	Disorders of bone and cartilage
+349	Disorders of external ear
+350	Disorders of lipoid metabolism
+351	Disorders of menstruation and abnormal bleeding
+352	Disorders of refraction and accommodation
+353	Disorders of the breast
+354	Diverticulosis and Diverticulitis
+355	Diverticula of intestine
+356	Doing triathlons
+357	Divorce
+358	Dizziness and Vertigo
+359	Down Syndrome
+360	Dizziness and giddiness
+361	Drinking Water
+362	Domestic Violence
+363	Drug Abuse
+364	Drug dependence and nondependence abuse of drugs
+365	Drowning
+366	Drug Reactions
+367	Drug Safety
+368	Drugs and Young People
+369	Dry Mouth
+370	Dual Diagnosis
+371	Dwarfism
+372	Dystonia
+373	E. Coli Infections
+374	Ear Disorders
+375	Ebola
+376	Ear Infections
+377	Ectopic Pregnancy
+378	Eczema
+379	Edema
+380	Educational and Community-Based Programs 
+381	Eating Disorders
+382	Ehlers-Danlos Syndrome
+383	Elbow Injuries and Disorders
+384	Electromagnetic Fields
+385	Electrical Injuries
+386	Emphysema
+387	Encephalitis
+388	Elder Abuse
+389	End of Life Issues
+390	Endocarditis
+391	Endocrine Diseases
+392	Endometriosis
+393	Endocrine, nutritional and metabolic diseases and immunity disorders
+394	Endoscopy
+395	Enlarged Prostate (BPH)
+396	Environmental Health 
+397	Eosinophilic Disorders
+398	Epilepsy
+399	Epistaxis
+400	Erectile Dysfunction
+401	Ergonomics
+402	Esophageal Cancer
+403	Esophagitis
+404	Essential hypertension
+405	Evaluating Health Information
+406	Exercise and Physical Fitness
+407	Exercise for Children
+408	Esophagus Disorders
+409	Exercise for Seniors
+410	Eye Cancer
+411	Eye Infections
+412	Eye Injuries
+413	Eye Diseases
+414	Eye Movement Disorders
+415	Eyelid Disorders
+416	Facial Injuries and Disorders
+417	Fainting
+418	Fatigue
+419	Female Infertility
+420	Fertility Health
+421	Falls
+422	Fetal Alcohol Spectrum Disorders
+423	Fetal Health and Development
+424	Fever
+425	Fibromyalgia / myositis
+426	Fifth Disease
+427	Finger Injuries and Disorders
+428	Fibromyalgia
+429	Fire Safety
+430	First Aid
+431	Fistulas
+432	Floods
+433	Flu
+434	Fluid and Electrolyte Balance
+435	Folic Acid
+436	Food Allergy
+437	Food Safety
+438	Food Labeling
+439	Foodborne Illness
+440	Foot Health
+441	Foot Injuries and Disorders
+442	Football
+443	Foreign Bodies
+444	Fracture of hand and fingers
+446	Fractures
+448	Friedreich's Ataxia
+450	Fragile X Syndrome
+452	G6PD Deficiency
+454	Gallbladder Diseases
+456	Gangrene
+458	Gastritis and duodenitis
+460	Gastrointestinal Bleeding
+445	Fracture of radius and ulna
+447	Fracture of lower limb
+449	Frostbite
+451	Fungal Infections
+453	Gallbladder Cancer
+455	Gallstones
+457	Gas
+459	Gastroenteritis
+461	Gastrointestinal hemorrhage
+462	Gaucher Disease
+463	Gay, Lesbian, Bisexual, and Transgender Health
+464	Genes and Gene Therapy
+465	Genetic Brain Disorders
+466	Genetic Counseling
+467	Genetic Disorders
+468	Genetic Testing
+469	Genital Herpes (Herpes Simplex Virus)
+470	Genital Warts
+471	Genomics 
+472	Genital Herpes
+473	Genomics  New
+474	Geo-caching
+475	GERD
+476	Germs and Hygiene
+477	Giant Cell Arteritis
+478	Giardia Infections
+479	Giardiasis
+480	Glaucoma
+481	Global Health  New
+482	Gonorrhea
+483	Gout
+484	Granulomatosis with Polyangiitis
+485	Growth Disorders
+486	Guillain-Barre Syndrome
+487	Gluten Sensitivity
+488	Gum Disease
+489	Gynecological disorder
+490	Haemophilus Infections
+491	Hair Loss
+492	Hair Problems
+493	H1N1 Flu (Swine Flu)
+494	Hantavirus Infections
+495	Hay Fever
+496	Hazardous Waste
+497	Hand Injuries and Disorders
+498	Head and Neck Cancer
+499	Head Injuries
+500	Head Lice
+501	Headache
+502	Health Communication and Health Information Technology 
+503	Health Disparities
+504	Health Facilities
+505	Health Checkup
+506	Health Fraud
+507	Health Insurance
+508	Health Literacy
+509	Health Occupations
+510	Health Problems in Pregnancy
+511	Health Screening
+512	Health Statistics
+513	Health-Related Quality of Life & Well-BeingNew
+514	Healthy Aging
+515	Healthy Living
+516	Hearing Aids
+517	Healthcare-Associated Infections  New
+518	Hearing and Other Sensory or Communication Disorders 
+519	Hearing Disorders and Deafness
+520	Heart Attack
+521	Heart Disease
+522	Heart Disease and Stroke 
+523	Hearing Problems in Children
+524	Heart Failure
+525	Heart Surgery
+526	Heart Disease in Women
+527	Heart Diseases
+528	Heart Transplantation
+529	Heart Valve Diseases
+530	Heartburn
+531	Heat Illness
+532	Heel Injuries and Disorders
+533	Helicobacter Pylori Infections
+534	Hemochromatosis
+535	Hemophilia
+536	Hemorrhagic Fevers
+537	Hemorrhagic Stroke
+538	Hemorrhoids
+539	Hepatitis
+540	Hepatitis A
+541	Hepatitis B
+542	Hepatitis C
+543	Hepatitis Testing
+544	Herbal Medicine
+545	Hernia
+546	Hernia of abdominal cavity
+547	Herniated Disk
+548	Heroin
+549	Herpes Simplex
+550	Hiatal Hernia
+551	Hiccups
+552	Hidradenitis Suppurativa
+553	High Blood Pressure in Pregnancy
+554	High Blood Pressure
+555	Hiking
+556	Hip Injuries and Disorders
+557	Hip Replacement
+558	Hispanic American Health
+559	Histoplasmosis
+560	HIV 
+561	HIV/AIDS
+562	HIV/AIDS and Infections
+563	HIV/AIDS and Pregnancy
+564	HIV/AIDS in Women
+565	HIV/AIDS Medicines
+566	Hives
+567	Hodgkin Disease
+568	Home Care Services
+569	Homeless Health Concerns
+570	Hormone Replacement Therapy
+571	Hormones
+572	Horseback riding
+573	Hospice Care
+574	Hot air ballooning, flying, and gliding
+575	Household Products
+576	Human Papillomavirus (HPV)
+577	Huntington's Disease
+578	HPV
+579	Human Immunodeficiency virus syndrome (HIV)
+580	Hurricanes
+581	Hydrocephalus
+582	Hyperglycemia
+583	Hypertension
+584	Hyperplasia of prostate
+585	Hyperlipidemia
+586	Hyperthyroidism
+587	Hypothermia
+588	Hypothyroidism
+589	Hysterectomy
+590	Hypoglycemia
+591	I
+592	Immune System and Disorders
+593	immunity disorders
+594	Immunization
+596	Impaired Driving
+598	Indigestion
+600	Infant and Newborn Care
+602	Infant and Newborn Nutrition
+604	Infection Control
+606	Infectious Arthritis
+608	Infectious Diseases
+610	Inflammatory disease of female pelvic organs
+612	Inhalation Injuries
+614	Insect Bites and Stings
+616	International Health
+595	Immunization and Infectious Diseases 
+597	Impetigo
+599	Indoor Air Pollution
+601	Infant and Newborn Development
+603	Infections and Pregnancy
+605	Infectious and parasitic diseases
+607	Infectious Mononucleosis
+609	Infertility
+611	Inhalants
+613	Injury and Violence Prevention 
+615	Insomnia
+617	Internet Safety
+618	Interstitial Cystitis
+619	Interstitial Lung Diseases
+620	Intervertebral disc disorders
+621	Intestinal Cancer
+622	Intestinal Obstruction
+623	Intracranial injury, excluding those with skull fracture
+624	Iron
+625	Irritable bowel syndrome
+626	Ischemic Stroke
+627	Itching
+628	Islet Cell Transplantation
+629	Jaw Injuries and Disorders
+630	Joint Disorders
+631	Juvenile Arthritis
+632	Jaundice
+633	Kaposi's Sarcoma
+634	Kawasaki Disease
+635	Kideny Stones
+636	Kidney Cancer
+637	Kidney Diseases
+638	Kidney Failure
+639	Kidney Stones
+640	Klinefelter's Syndrome
+641	Knee Injuries and Disorders
+642	Kidney Cysts
+643	Knee Replacement
+644	Lactose Intolerance
+645	Laser Eye Surgery
+646	Kidney Transplantation
+647	Latex Allergy
+648	Lead Poisoning
+649	Learning Disorders
+650	Leg Injuries and Disorders
+651	Legionnaires' Disease
+652	Lens replaced by pseudophakos
+653	Leishmaniasis
+654	Lesbian, Gay, Bisexual, and Transgender Health  New
+655	Leukemia
+656	Leukodystrophies
+657	Lewy Body Disease
+658	Lice
+659	Limb Loss
+660	Lipid Metabolism Disorders
+661	Listeria Infections
+662	Liver Cancer
+663	Liver Diseases
+664	Liver Function Tests
+665	Liver Transplantation
+666	Living with HIV/AIDS
+667	Low Blood Pressure
+668	Lumbago
+669	Lung Cancer
+670	Lung Diseases
+671	Lung Transplantation
+672	Lyme Disease
+673	Lupus
+674	Lymphatic Diseases
+675	Lymphedema
+676	Lymphoma
+677	Macular Degeneration
+678	Major depressive disorder
+679	Malaria
+680	Male Breast Cancer
+681	Malaise and fatigue
+682	Malabsorption Syndromes
+683	Male Infertility
+684	Malignant neoplasm of breast
+685	Malignant neoplasm of lymphatic and hematopoietic
+686	Malignant neoplasm of prostate
+687	Malignant neoplasm of skin
+688	Malignant neoplasms of colon and rectum
+689	Malnutrition
+690	Mammography
+691	Managed Care
+692	Marfan Syndrome
+693	Mastectomy
+694	Maternal, Infant, and Child Health 
+695	Measles
+696	Medicaid
+697	Meniere's Disease
+698	Meningitis
+699	Marijuana
+700	Meningococcal Infections
+701	Menopausal and postmenopausal disorders
+702	Menopause
+703	Menstration
+704	Menstruation
+705	Mental disorders
+706	Mental Health
+707	Mental Health and Mental Disorders 
+708	Mesothelioma
+709	Metabolic Disorders
+710	Metabolic Syndrome
+711	Methamphetamine
+712	Microcephaly
+713	Methicillin-resistant Staphylococcus aureus (MRSA)
+714	Middle East Respiratory Syndrome (MERS)
+715	Migraine
+716	Minerals
+717	Mild Cognitive Impairment
+718	Miscarriage
+719	Mitochondrial Diseases
+720	Mitral Valve Prolapse
+721	Molds
+722	Moles
+723	Monkeypox Virus Infections
+724	Motion Sickness
+725	Motor Vehicle Safety
+726	Mouth Disorders
+727	MRI Scans
+728	MRSA
+729	Mood Disorders
+730	Movement Disorders
+731	Multiple Myeloma
+732	Multiple Sclerosis
+733	Muscle Cramps
+734	Muscle Disorders
+735	Muscular Dystrophy
+736	Mumps
+737	Myalgia
+738	Myasthenia Gravis
+739	Myelodysplastic Syndromes
+740	Myositis
+741	Nail Diseases
+742	Nail fungus
+743	Mycobacterial Infections
+744	Nasal Cancer
+745	Native American Health
+747	Nausea and Vomiting
+749	Neoplasms
+751	Neuroblastoma
+753	Neurologic Diseases
+755	Neurotic depression
+757	Noninfectious enteritis and colitis
+759	Normal pregnancy
+761	Nose Injuries and Disorders
+763	Obesity in Children
+765	Opioid Abuse and Addiction
+767	Oral Cancer
+769	Orthodontia
+771	Osteogenesis Imperfecta
+746	Native Hawaiian and Pacific Islander Health
+748	Neck Injuries and Disorders
+750	Neural Tube Defects
+752	Neurofibromatosis
+754	Neuromuscular Disorders
+756	Newborn Screening
+758	Noninflammatory disorders of the female genital organs
+760	Norovirus Infections
+762	Obesity
+764	Obsessive-Compulsive Disorder
+766	Optic Nerve Disorders
+768	Organ Transplantation
+770	Osteoarthritis
+772	Osteonecrosis
+773	Osteoporosis
+774	Ostomy
+775	Ovarian Cancer
+776	Ovarian Cysts
+777	Ovarian Disorders
+778	Overactive Bladder
+779	Overweight and Obesity
+780	Oxygen Therapy
+781	Pacemakers and Implantable Defibrillators
+782	Paget's Disease of Bone
+783	Pain
+784	Pain in joint
+785	Pain Relievers
+786	Palliative Care
+787	Pancreas Transplantation
+788	Pancreatic Cancer
+789	Pancreatic Diseases
+790	Pancreatitis
+791	Panic Disorder
+792	Paralysis
+793	Parasitic Diseases
+794	Parathyroid Disorders
+795	Parkinson's Disease
+796	Pelvic Inflammatory Disease
+797	Pelvic Pain
+798	Pelvic Support Problems
+799	Pemphigus
+800	Penis Disorders
+801	Peptic Ulcer
+802	Pericardial Disorders
+803	Period Pain
+804	Peripheral Arterial Disease
+805	Peripheral Nerve Disorders
+806	Peritoneal Disorders
+807	Personal Health Records
+808	Peripheral enthesopathies and allied disorders
+809	Personality Disorders
+810	Pesticides
+811	Phenylketonuria
+812	Pheochromocytoma
+813	Phobias
+814	Pinkeye
+815	Pinworms
+816	Pituitary Disorders
+817	Plastic and Cosmetic Surgery
+818	Platelet Disorders
+819	Pituitary Tumors
+820	Plague
+821	Pneumococcal Infections
+822	Pneumocystis Infections
+823	Pneumonia
+824	Pleural Disorders
+825	Poison Ivy, Oak, and Sumac
+826	Poisoning
+827	Poisonings
+828	Polio and Post-Polio Syndrome
+829	Polycystic Ovary Syndrome
+830	Polymyalgia Rheumatica
+831	Porphyria
+832	Post-Traumatic Stress Disorder
+833	Postpartum Care
+834	Postpartum Depression
+835	Prader-Willi Syndrome
+836	Preconception Care
+837	Prediabetes
+838	Pregnancy
+839	Premature Ovarian Failure
+840	Prenatal Testing
+841	Prescription Drug Abuse
+842	Prenatal Care
+843	Pressure Sores
+844	Premenstrual Syndrome
+845	Preterm Labor
+846	Progressive Supranuclear Palsy
+847	Prostate Cancer
+848	Prostate Diseases
+849	Prostate Cancer Screening
+850	Psoriasis
+851	Psoriasis
+852	Psoriatic Arthritis
+853	Psychotic Disorders
+854	Puberty
+855	Pulmonary Embolism
+856	Pulmonary Hypertension
+857	Pulmonary Fibrosis
+858	Pulmonary Rehabilitation
+859	Pyrexia of unknown origin
+860	Rabies
+861	Radiation Emergencies
+862	Radiation Exposure
+863	Radiation Therapy
+864	Rectal Disorders
+865	Raynaud's Disease
+866	Reflux esophagitis
+867	Refractive Errors
+868	Reproductive Hazards
+869	Rehabilitation
+870	Respiratory Diseases 
+871	Respiratory Failure
+872	Respiratory Syncytial Virus Infections
+873	Respiratory problems
+874	Restless Legs
+875	Retinal Disorders
+876	Rett Syndrome
+877	Retinal Detachment
+878	Retinal detachment and other retinal disorders
+879	Reye Syndrome
+880	Rh Incompatibility
+881	Rickets
+882	Rheumatoid arthritis
+883	Rosacea
+884	Rotator Cuff Injuries
+885	Rotavirus Infections
+886	Rubella
+887	Salivary Gland Cancer
+888	Salivary Gland Disorders
+889	Salmonella Infections
+890	Sarcoidosis
+891	Scabies
+892	Scars
+893	Schizophrenia
+894	Sciatica
+895	Scleroderma
+896	Scoliosis
+897	Seasonal Affective Disorder
+898	Secondhand Smoke
+899	Seizures
+901	Self-harm
+903	Sexual Assault
+905	Sexually Transmitted Diseases
+907	Shock
+909	Shoulder Injuries and Disorders
+911	Sinusitis
+913	Skin Aging
+915	Skin Conditions
+917	Sleep Apnea
+919	Small Intestine Disorders
+921	Snoring
+923	Sore Throat
+925	Speech and Language Problems in Children
+927	Spina Bifida
+929	Spinal Cord Injuries
+900	Sebaceous cyst
+902	Sepsis
+904	Sexual Health
+906	Shingles
+908	Shortness of Breath
+910	Sickle Cell Anemia
+912	Sjogren's Syndrome
+914	Skin Cancer
+916	Skin Infections
+918	Sleep Disorders
+920	Smoking
+922	Skin Pigmentation Disorders
+924	Speech and Communication Disorders
+926	Spider Bites
+928	Spinal Cord Diseases
+930	Spinal Muscular Atrophy
+931	Spinal Stenosis
+932	Soft Tissue Sarcoma
+933	Spine Injuries and Disorders
+934	Sports Fitness
+935	Sports Injuries
+936	Sports Safety
+937	Spleen Diseases
+938	Sprains and Strains
+939	Sprains and strains of ankle
+940	Sprains and strains of knee and leg
+941	Sprains and strains of wrist and hand
+942	Staphylococcal Infections
+943	Statins
+944	Sprains and strains of neck
+945	Stem Cells
+946	Steroids
+947	Stillbirth
+948	Stomach Cancer
+949	Stomach Disorders
+950	Streptococcal Infections
+951	Streptococcal sore throat
+952	Stress
+953	Stroke
+954	Stroke Rehabilitation
+955	Stuttering
+956	Substance Abuse 
+957	Sudden Infant Death Syndrome
+958	Suicide
+959	Superficial injuries of cornea
+960	Surgery
+961	Swallowing Disorders
+962	Sweat
+963	Sun Exposure
+964	syncope
+965	Synovitis and tenosynovitis
+966	Syphilis
+967	Taste and Smell Disorders
+968	Syringomyelia
+969	Tay-Sachs Disease
+970	Temporomandibular Joint Dysfunction
+971	Testicular Cancer
+972	Tendinitis
+973	Testicular Disorders
+974	Tetanus
+975	Tetanus, Diphtheria, and Pertussis Vaccines
+976	Thalassemia
+977	Thoracic Outlet Syndrome
+978	Throat Cancer
+979	Thymus Cancer
+980	Throat Disorders
+981	Thyroid Cancer
+982	Thyroid Diseases
+983	Thyroid Tests
+984	Tick Bites
+985	Tinea Infections
+986	Tinnitus
+987	Tobacco Use 
+988	Toe Injuries and Disorders
+989	Tongue Disorders
+990	Tonsillitis
+991	Tonsils and Adenoids
+992	Tooth Decay
+993	Tooth Disorders
+994	Tornadoes
+995	Toxoplasmosis
+996	Tracheal Disorders
+997	Transient Ischemic Attack
+998	Traumatic Brain Injury
+999	Tourette Syndrome
+1000	Traveler's Health
+1001	Tremor
+1002	Trichomonas Infection (Trichomoniasis)
+1003	Trichomoniasis
+1004	Trigeminal Neuralgia
+1005	Triglycerides
+1006	Tsunamis
+1007	Tubal Ligation
+1008	Traumatic Brain Injury (TBI)
+1009	Tuberculosis
+1010	Tuberculosis (TB)
+1011	Tuberous Sclerosis
+1012	Tumors and Pregnancy
+1013	Turner Syndrome
+1014	Ulcer of stomach and small intestine
+1015	Uncommon Infant and Newborn Problems
+1016	Twins, Triplets, Multiple Births
+1017	Urethral Disorders
+1018	Urinalysis
+1019	Ulcerative Colitis
+1020	Urinary Incontinence
+1021	Underage Drinking
+1022	Urinary tract infection
+1023	Urinary Tract Infections
+1024	Urine and Urination
+1025	Urticaria
+1026	Usher Syndrome
+1027	Uterine Cancer
+1028	Uterine Diseases
+1029	Uterine Fibroids
+1030	Vaginal Bleeding
+1031	Vaginal Cancer
+1032	Vaginal Diseases
+1033	Valley Fever
+1034	Vaginitis
+1035	Varicose Veins
+1036	Vascular Diseases
+1037	Vasectomy
+1038	Vasculitis
+1039	Vegetarian Diet
+1040	Veterans and Military Family Health
+1041	Veterans and Military Health
+1042	Viral Warts
+1043	Viral Infections
+1044	Vision 
+1045	Vision Impairment and Blindness
+1046	Visual refractive errors
+1047	Vitiligo
+1048	Voice Disorders
+1049	Von Hippel-Lindau Disease
+1050	Volcanoes
+1051	Vulvar Cancer
+1052	Vulvar Disorders
+1053	Walking Problems
+1054	Warts
+1055	Water Pollution
+1056	Water-related Diseases
+1059	West Nile Virus
+1062	Wilson Disease
+1065	Wrist Injuries and Disorders
+1057	Weight Control
+1060	Whooping Cough
+1063	Winter Weather Emergencies
+1066	Yeast Infections
+1058	Weight Loss Surgery
+1061	Wilms Tumor
+1064	Wounds and Injuries
+1067	Zika Virus
+\.
+
+
+--
+-- Name: in_condition_condition_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.in_condition_condition_id_seq', 1067, true);
+
+
+--
+-- Data for Name: in_history; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.in_history (user_id, condition_id) FROM stdin;
+41	193
+41	307
+3	79
+3	2
+26	5
+26	64
+26	72
+26	294
+49	157
+49	520
+48	759
+62	37
+70	307
+71	2
+71	3
+71	5
+71	6
+72	5
+72	146
+72	882
+74	5
+74	302
+74	676
+75	104
+75	152
+75	896
+75	958
+78	225
+6	3
+52	6
+52	16
+52	2
+209	5
+210	1
+210	5
+215	1
+215	2
+215	3
+215	4
+215	5
+215	6
+215	7
+215	8
+215	9
+215	10
+220	73
+220	940
+220	418
+224	7
+\.
+
+
+--
+-- Data for Name: in_invites; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.in_invites (invite_id, code_type, email, valid_from, valid_to, status, user_id, max_usage, team_id, user_type, name) FROM stdin;
+a2a00731fe2bd410	org	\N	2017-03-11 11:01:29.545	2017-04-10 11:01:29.545	active	\N	\N	\N	\N	\N
+096ade7951c39428	personal	evgeniy.kozlovtsev@gmail.com	2017-03-12 00:11:14.839	2017-04-11 00:11:14.839	used	3	\N	\N	\N	\N
+d9484d4de664f67c	personal	madhokr@gmail.com	2017-03-12 00:45:20.222	2017-04-11 00:45:20.222	used	8	\N	\N	\N	\N
+5b7f33a1a1d38743	personal	debbiehanayi@gmail.com	2017-03-12 00:56:38.627	2017-04-11 00:56:38.627	active	10	\N	\N	\N	\N
+US_VETERANS	org	\N	2017-03-11 11:01:29.545	2017-04-11 11:01:29.545	active	\N	2000	\N	\N	\N
+f76fde824f6ee922	personal	vikramsnm@gmail.com	2017-05-05 18:13:12.144	2017-06-04 18:13:12.144	active	56	\N	\N	member	\N
+SXSW2017	org	\N	2017-04-07 08:17:06.539	2017-05-07 08:17:06.539	expired	\N	20000	uke1msja57nobksqoeafejscma	member	Member group: SXSW2017
+Nirankari	org	\N	2017-05-16 08:17:06.539	2017-10-07 08:17:06.539	active	\N	10000	\N	member	Member group: Nirankari
+nbsdac	org	\N	2017-05-07 08:17:06.539	2017-10-07 08:17:06.539	active	\N	10000	\N	member	Member group: nbsdac
+URwanda	org	\N	2017-04-17 20:57:37.343	2018-05-17 20:57:37.343	active	\N	50000	qz5y9h1ysprj3bpotp4z1h1zka	member	Member group: URwanda
+F&FNS1	org	\N	2017-04-13 18:50:36.876	2018-07-13 18:50:36.876	active	\N	1000	qbcff6aj3ir7ixesu9zkcffbth	member	Member group: F&FNS1
+Praise2018	org	\N	2017-04-13 18:50:36.876	2018-12-30 18:50:36.876	active	\N	10000000	qbcff6aj3ir7ixesu9zkcffbth	member	Member group: Praise2018
+LowPrice	org	\N	2017-04-13 18:50:36.876	2018-12-30 18:50:36.876	active	\N	2000000	qbcff6aj3ir7ixesu9zkcffbth	member	Member group: LowPrice
+NS1medicalMarch	org	\N	2017-04-07 08:56:52.893	2018-10-07 08:56:52.893	active	\N	100	dps1po77uincun4dy34r7t45do	provider	Member group: NS1medicalMarch
+ee029d28decd6e4e	personal	vemulapalli84@gmail.com	2018-02-24 18:20:57.396	2018-03-26 18:20:57.396	used	213	\N	\N	member	\N
+063f7240b6ae662e	personal	tlc@outlook.com	2018-02-24 22:22:54.343	2018-03-26 22:22:54.344	active	213	\N	\N	member	\N
+504b49519efcb860	personal	andrea@bitmed.io	2018-03-13 17:58:39.582	2018-04-12 17:58:39.582	used	26	\N	\N	member	\N
+dcf0c7022c2c3a98	personal	andrea+1@bitmed.io	2018-03-13 18:37:33.633	2018-04-12 18:37:33.633	used	26	\N	\N	member	\N
+a28bff4cffedc3ae	personal	sss	2018-03-28 08:07:18.257	2018-04-27 08:07:18.257	active	216	\N	\N	member	\N
+\.
+
+
+--
+-- Data for Name: in_preference; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.in_preference (preference_id, name) FROM stdin;
+4	Toe Injuries and Disorders
+5	Health Checkup
+6	Abortion
+7	Abdominal Pain
+8	Acne
+9	Adolescent Health 
+10	Acupuncture
+11	Acid Reflux
+12	Adoption
+13	African American Health
+14	Advance Directives
+15	Affordable Care Act 
+16	After Surgery
+17	AIDS
+18	Alaska Native Health 
+19	Air Pollution
+20	Alcohol
+21	Alcohol Abuse in Pregnancy 
+22	Alcohol and Youth 
+23	Alcohol Dependence
+24	Alternative Medicine
+25	Alzheimer's Caregivers
+26	Amblyopia
+27	Alzheimer's Disease
+28	AML
+29	Anabolic Steroids
+30	Animal Bites
+31	Anaphylaxis
+32	Animal Diseases and Your Health
+33	Anorexia Nervosa 
+34	Ansomia
+35	Anthrax
+36	Antibiotics
+37	Anticoagulants 
+38	Antidepressants
+39	Antihypertensive Medicines 
+40	Antioxidants
+41	Anxiety
+42	Arthritis
+43	Artificial Limbs
+44	Asian American Health
+45	Aspergillosis
+46	Assisted Reproductive Technology
+47	Assisted Living
+48	Assistive Devices
+49	Asthma
+50	Asthma in Children
+51	Atherosclerosis
+52	Baby Care
+53	Back Injuries
+54	Back Pain
+55	Bad Breath
+56	Baseball or softball
+57	Basketball
+58	Bed Bugs
+59	Bedwetting
+60	Bereavement
+61	Birth Control
+62	Biking
+63	Birth Defects
+64	Blood Sugar
+65	Blood Thinners
+66	Blood Transfusion and Donation
+67	Boating
+68	Body Weight
+69	Bone Cancer
+70	Botox
+71	Bullying
+72	Bungee jumping
+73	Burns
+74	Bursitis
+75	Camping
+76	Cancer 
+77	Cancer Alternative Therapies
+78	Caregivers
+79	Child Abuse
+80	Child Nutrition
+81	Child Safety
+82	Childbirth
+83	Childbirth Problems
+84	Childhood Brain Tumors
+85	Childhood Immunization
+86	Childhood Leukemia
+87	Children's Health
+88	Chiropractic
+89	Chlamydia Infections
+90	Choking
+91	Cholera
+92	Cholesterol
+93	Choosing a Doctor or Health Care Service
+94	Chronic Bronchitis
+95	Chronic Fatigue Syndrome
+96	Chronic Kidney Disease 
+97	Chronic Lymphocytic Leukemia
+98	Chronic Myeloid Leukemia
+99	Chronic Pain
+100	Circumcision
+101	Cirrhosis
+102	Cleft Lip and Palate
+103	Climate Change
+104	Clinical Trials
+105	Cloning
+106	Clostridium Difficile Infections
+107	Club Drugs
+108	Cocaine
+109	Cochlear Implants
+110	Cold and Cough Medicines
+111	Cold Sores
+112	Colic
+113	Collapsed Lung
+114	College Health
+115	Colonic Diseases
+116	Colonic Polyps
+117	Colonoscopy
+118	Color Blindness
+119	Colorectal Cancer
+120	Coma
+121	Common Cold
+122	Common Infant and Newborn Problems
+123	Complementary and Integrative Medicine
+124	Complex Regional Pain Syndrome
+125	Compulsive Gambling
+126	Concussion
+127	Congenital Heart Defects
+128	Connective Tissue Disorders
+129	COPD
+130	Constipation
+131	Coping with Chronic Illness
+132	Coping with Disasters
+133	Corneal Disorders
+134	Corns and Calluses
+135	Coronary Artery Bypass Surgery
+136	Coronary Artery Disease
+137	Coronavirus Infections
+138	Cosmetic Dentistry
+139	Cosmetics
+140	CPR
+141	Craniofacial Abnormalities
+142	Creatinine
+143	Creutzfeldt-Jakob Disease
+144	Critical Care
+145	Croup
+146	Crohn's Disease
+147	Cryptosporidiosis
+148	CT Scans
+152	Dancing
+156	Degenerative Nerve Diseases
+160	Dementias, Including Alzheimer's Disease  New
+164	Depression
+168	Diabetes and Pregnancy
+172	Diabetes Medicines
+176	Diabetic Eye Problems
+180	Diabetic Nerve Problems
+184	Dietary Fiber
+188	Digestive Diseases
+192	Disaster Preparation and Recovery
+196	Dizziness and Vertigo
+200	Drinking Water
+204	Drug Safety
+208	Dystonia
+212	Ear Disorders
+216	Eating Disorders
+220	Edema
+224	Elder Abuse
+228	Emphysema
+232	Endocrine Diseases
+236	Environmental Health
+240	Ergonomics
+244	Evaluating Health Information
+248	Eye Cancer
+252	Eye Movement Disorders
+256	Fainting
+260	Family Planning 
+264	Fetal Alcohol Spectrum Disorders
+268	Fifth Disease
+272	First Aid
+276	Flu
+280	Food Allergy
+149	Cushing's Syndrome
+153	Dandruff, Cradle Cap, and Other Scalp Conditions
+157	Dehydration
+161	Dengue
+165	Developmental Disabilities
+169	Diabetes Complications
+173	Diabetes Type 1
+177	Diabetic Foot
+181	Diagnostic Imaging
+185	Dietary Proteins
+189	Diphtheria
+193	Dislocations
+197	Doing triathlons
+201	Drowning
+205	Drugs and Young People
+209	Dry Mouth
+213	Ear Infections
+217	Ebola
+221	Educational and Community-Based Programs 
+225	Electrical Injuries
+229	Encephalitis
+233	Endometriosis
+237	Eosinophilic Disorders
+241	Esophageal Cancer
+245	Exercise and Physical Fitness
+249	Eye Diseases
+253	Eye Wear
+257	Falls
+261	Fatigue
+265	Fetal Health and Development
+269	Financial Assistance
+273	Fishing
+277	Flu Shot
+281	Food Labeling
+150	Cystic Fibrosis
+154	DASH Diet
+158	Delirium
+162	Dental Health
+166	Diabetes
+170	Diabetes in Children and Teens
+174	Diabetes Type 2
+178	Diabetic Heart Disease
+182	Dialysis
+186	Dietary Supplements
+190	Disabilities
+194	Diverticulosis and Diverticulitis
+198	Domestic Violence
+202	Drug Abuse
+206	Dual Diagnosis
+210	E-Cigarettes
+214	Early and Middle Childhood  New
+218	Ectopic Pregnancy
+222	Ehlers-Danlos Syndrome
+226	Electromagnetic Fields
+230	End of Life Issues
+234	Endoscopy
+238	Epilepsy
+242	Ethics
+246	Exercise for Children
+250	Eye Infections
+254	Eyelid Disorders
+258	Family History
+262	Female Infertility
+266	Fever
+270	Finger Injuries and Disorders
+274	Fistulas
+278	Fluid and Electrolyte Balance
+282	Food Safety
+151	Cytomegalovirus Infections
+155	Deep Vein Thrombosis
+159	Dementia
+163	Dentures
+167	Diabetes 
+171	Diabetes Insipidus
+175	Diabetic Diet
+179	Diabetic Kidney Problems
+183	Dietary Fats
+187	Diets
+191	Disability and Health 
+195	Divorce
+199	Down Syndrome
+203	Drug Reactions
+207	Dwarfism
+211	E. Coli Infections
+215	Earthquakes
+219	Eczema
+223	Elbow Injuries and Disorders
+227	Emergency Medical Services
+231	Endocarditis
+235	Enlarged Prostate (BPH)
+239	Erectile Dysfunction
+243	Esophagus Disorders
+247	Exercise for Seniors
+251	Eye Injuries
+255	Facial Injuries and Disorders
+259	Family Issues
+263	Fertility Health
+267	Fibromyalgia
+271	Fire Safety
+275	Floods
+279	Folic Acid
+283	Foodborne Illness
+284	Foot Health
+285	Foot Injuries and Disorders
+286	Football
+287	Foreign Bodies
+288	Fractures
+289	Fragile X Syndrome
+290	Friedreich's Ataxia
+291	Frostbite
+292	Fungal Infections
+293	G6PD Deficiency
+294	Gallbladder Cancer
+295	Gallstones
+296	Gangrene
+297	Gas
+298	Gastroenteritis
+299	Gastrointestinal Bleeding
+300	Gaucher Disease
+301	Gay, Lesbian, Bisexual, and Transgender Health
+302	Genes and Gene Therapy
+303	Genetic Brain Disorders
+304	Genetic Counseling
+305	Genetic Disorders
+306	Genetic Testing
+307	Genital Herpes
+308	Genital Warts
+309	Genomics 
+310	Genomics  New
+311	Geo-caching
+312	GERD
+313	German Measles   Rubella
+314	Germs and Hygiene
+315	Giant Cell Arteritis
+316	Giardia Infections
+317	Glaucoma
+318	Global Health  New
+319	Gluten Sensitivity
+320	Gonorrhea
+321	Golf
+322	Gout
+323	Granulomatosis with Polyangiitis
+324	Growth Disorders
+325	Guillain-Barre Syndrome
+326	Gum Disease
+327	Gun Safety
+328	H1N1 Flu (Swine Flu)
+329	Haemophilus Infections
+330	Hair Loss
+331	Hair Problems
+332	Hand Injuries and Disorders
+333	Hantavirus Infections
+334	Hay Fever
+335	Hazardous Waste
+336	Head and Neck Cancer
+337	Head Injuries
+338	Head Lice
+339	Headache
+340	Health Communication and Health Information Technology 
+341	Health Checkup
+342	Health Disparities
+343	Health Facilities
+344	Health Fraud
+345	Health Insurance
+346	Health Literacy
+347	Health Occupations
+348	Health Problems in Pregnancy
+349	Health Screening
+350	Health Statistics
+351	Health-Related Quality of Life & Well-BeingNew
+352	Healthcare-Associated Infections  New
+353	Healthy Aging
+354	Healthy Living
+355	Hearing Aids
+356	Hearing and Other Sensory or Communication Disorders 
+357	Hearing Disorders and Deafness
+358	Hearing Problems in Children
+359	Heart Attack
+360	Heart Disease and Stroke 
+361	Heart Disease in Women
+362	Heart Diseases
+363	Heart Diseases--Prevention
+364	Heart Failure
+365	Heart Surgery
+366	Heart Transplantation
+367	Heart Valve Diseases
+368	Heat Illness
+369	Heartburn
+370	Heel Injuries and Disorders
+371	Helicobacter Pylori Infections
+372	Hemochromatosis
+373	Hemophilia
+374	Hemorrhagic Fevers
+375	Hemorrhagic Stroke
+376	Hemorrhoids
+377	Hepatitis
+378	Hepatitis A
+379	Hepatitis B
+380	Hepatitis C
+381	Hepatitis Testing
+382	Herbal Medicine
+383	Hernia
+384	Herniated Disk
+385	Heroin
+386	Herpes Simplex
+387	Hiatal Hernia
+388	Hiccups
+389	Hidradenitis Suppurativa
+390	High Blood Pressure
+391	High Blood Pressure in Pregnancy
+392	Hiking
+396	Histoplasmosis
+400	HIV/AIDS and Pregnancy
+404	Hodgkin Disease
+408	Hormones
+412	Household Products
+416	Hydrocephalus
+420	Hypoglycemia
+423	Immune System and Disorders
+427	Impetigo
+431	Infant and Newborn Care
+435	Infections and Pregnancy
+439	Infertility
+443	Insect Bites
+447	Interstitial Cystitis
+393	Hip Injuries and Disorders
+397	HIV 
+401	HIV/AIDS in Women
+405	Home Care Services
+409	Horseback riding
+413	HPV
+417	Hygiene
+421	Hypothermia
+425	Immunization
+429	Indigestion
+433	Infant and Newborn Nutrition
+437	Infectious Diseases
+441	Inhalation Injuries
+445	Insomnia
+449	Interstitial Lung Diseases
+394	Hip Replacement
+398	HIV/AIDS
+402	HIV/AIDS Medicines
+406	Homeless Health Concerns
+410	Hospice Care
+414	Huntington's Disease
+418	Hyperglycemia
+422	Hypothyroidism
+426	Immunization and Infectious Diseases 
+430	Indoor Air Pollution
+434	Infection Control
+438	Infectious Mononucleosis
+442	Injury and Violence Prevention 
+446	International Health
+450	Intestinal Cancer
+395	Hispanic American Health
+399	HIV/AIDS and Infections
+403	Hives
+407	Hormone Replacement Therapy
+411	Hot air ballooning, flying, and gliding
+415	Hurricanes
+419	Hyperthyroidism
+424	Hysterectomy
+428	Impaired Driving
+432	Infant and Newborn Development
+436	Infectious Arthritis
+440	Inhalants
+444	Insect Bites and Stings
+448	Internet Safety
+451	Intestinal Obstruction
+452	Irritable Bowel Syndrome
+453	Iron
+454	Ischemic Stroke
+455	Islet Cell Transplantation
+456	Jaundice
+457	Itching
+458	Jaw Injuries and Disorders
+459	Joint Disorders
+460	Juvenile Arthritis
+461	Kaposi's Sarcoma
+462	Kawasaki Disease
+463	Kidney Cancer
+464	Kidney Diseases
+465	Kidney Cysts
+466	Kidney Failure
+467	Kidney Stones
+468	Kidney Tests
+469	Kidney Transplantation
+470	Klinefelter's Syndrome
+471	Knee Injuries and Disorders
+472	Knee Replacement
+473	Laboratory Tests
+474	Lactose Intolerance
+475	Laser Eye Surgery
+476	Latex Allergy
+477	Lead Poisoning
+478	Learning Disorders
+479	Leg Injuries and Disorders
+480	Legionnaires' Disease
+481	Leishmaniasis
+482	Lesbian, Gay, Bisexual, and Transgender Health  New
+483	Leukemia
+484	Leukodystrophies
+485	Lewy Body Disease
+486	Lice
+487	Limb Loss
+488	Lipid Metabolism Disorders
+489	Listeria Infections
+490	Liver Cancer
+491	Liver Diseases
+492	Liver Function Tests
+493	Liver Transplantation
+494	Living with HIV/AIDS
+495	Low Blood Pressure
+496	Lung Cancer
+497	Lung Diseases
+498	Lung Transplantation
+499	Lupus
+500	Lyme Disease
+501	Lymphatic Diseases
+502	Lymphedema
+503	Lymphoma
+504	Macular Degeneration
+505	Malabsorption Syndromes
+506	Malaria
+507	Male Breast Cancer
+508	Male Infertility
+509	Malnutrition
+510	Mammography
+511	Managed Care
+512	Marfan Syndrome
+513	Marijuana
+514	Mastectomy
+515	Maternal, Infant, and Child Health 
+516	Measles
+517	Medicaid
+518	Medical Device Safety
+519	Medical Ethics
+520	Medical Product Safety 
+521	Medicare
+522	Medicare Prescription Drug Coverage
+523	Medication Errors
+524	Medicines
+525	Medicines and Children
+526	Meditation
+527	Melanoma
+528	Memory
+529	Men's Health
+530	Meniere's Disease
+531	Meningitis
+532	Meningococcal Infections
+533	Menopause
+534	Menstration
+535	Menstruation
+536	Mental Disorders
+537	Mental Health
+538	Mental Health and Mental Disorders 
+539	Mercury
+540	Mesothelioma
+541	Metabolic Disorders
+542	Metabolic Panel
+543	Metabolic Syndrome
+544	Methamphetamine
+545	Migraine
+546	Mild Cognitive Impairment
+547	Minerals
+548	Miscarriage
+549	Mitochondrial Diseases
+550	Mitral Valve Prolapse
+551	Mobility Aids
+552	Molds
+553	Moles
+554	Monkeypox Virus Infections
+555	Mood Disorders
+556	Motion Sickness
+557	Motor Vehicle Safety
+558	Mountain climbing
+559	Movement Disorders
+560	Mouth Disorders
+561	MRI Scans
+562	MRSA
+563	Multiple Myeloma
+564	Multiple Sclerosis
+565	Mumps
+566	Muscle Cramps
+567	Muscular Dystrophy
+568	Muscle Disorders
+569	Myasthenia Gravis
+570	Mycobacterial Infections
+571	Myelodysplastic Syndromes
+572	Myositis
+573	Nail Diseases
+574	Nasal Cancer
+575	Native American Health
+576	Native Hawaiian and Pacific Islander Health
+577	Nausea and Vomiting
+578	Neck Injuries and Disorders
+579	Neuroblastoma
+580	Neurofibromatosis
+585	Neuromuscular Disorders
+589	Nuclear Scans
+593	Nutrition for Seniors
+597	Obsessive-Compulsive Disorder
+601	Oil Spills
+605	Oral Cancer
+609	Organ Transplantation
+613	Osteonecrosis
+617	Ovarian Cysts
+621	Overweight and Obesity
+581	Neural Tube Defects
+584	Newborn Screening
+588	Nose Injuries and Disorders
+592	Nutrition and Weight Status 
+596	Obesity in Children
+600	Occupational Safety and Health 
+604	Optic Nerve Disorders
+608	Organ Donation
+612	Osteogenesis Imperfecta
+616	Ovarian Cancer
+620	Overactive Bladder
+582	Neurologic Diseases
+586	Noodling
+590	Nursing Homes
+594	Nutritional Support
+598	Occupational Health
+602	Older Adults  New
+606	oral health
+610	Orthodontia
+614	Osteoporosis
+618	Ovarian Disorders
+583	Noise
+587	Norovirus Infections
+591	Nutrition
+595	Obesity
+599	Occupational Health for Healthcare Providers
+603	Opioid Abuse and Addiction
+607	Oral Health 
+611	Osteoarthritis
+615	Ostomy
+619	Over-the-Counter Medicines
+622	Oxygen Therapy
+623	Ozone
+624	Paget's Disease of Bone
+625	Pacemakers and Implantable Defibrillators
+626	Pain
+627	Pain Relievers
+628	Palliative Care
+629	Pancreas Transplantation
+630	Pancreatic Cancer
+631	Pancreatic Diseases
+632	Pancreatitis
+633	Panic Disorder
+634	Paralysis
+635	Parasitic Diseases
+636	Parathyroid Disorders
+637	Parenting
+638	Parkinson's Disease
+639	Patient Rights
+640	Patient Safety
+641	Pelvic Inflammatory Disease
+642	Pelvic Pain
+643	Pelvic Support Problems
+644	Pemphigus
+645	Penis Disorders
+646	Peptic Ulcer
+647	Pericardial Disorders
+648	Period Pain
+649	Peripheral Arterial Disease
+650	Peripheral Nerve Disorders
+651	Peritoneal Disorders
+652	Personal Health Records
+653	Personality Disorders
+654	Pesticides
+655	Pet Health
+656	Phenylketonuria
+657	Pheochromocytoma
+658	Phobias
+659	Physical Activity 
+660	Piercing and Tattoos
+661	Pinkeye
+662	Pinworms
+663	Pituitary Disorders
+664	Pituitary Tumors
+665	Plague
+666	Plastic and Cosmetic Surgery
+667	Platelet Disorders
+668	Pleural Disorders
+669	Pneumococcal Infections
+670	Pneumocystis Infections
+671	Pneumonia
+672	Poison Ivy, Oak, and Sumac
+673	Poisoning
+674	Polio and Post-Polio Syndrome
+675	Polycystic Ovary Syndrome
+676	Polymyalgia Rheumatica
+677	Porphyria
+678	Post-Traumatic Stress Disorder
+679	Postpartum Care
+680	Postpartum Depression
+681	Potassium
+682	Prader-Willi Syndrome
+683	Preconception Care
+684	Prediabetes
+685	Pregnancy
+686	Pregnancy and Medicines
+687	Pregnancy and Nutrition
+688	Pregnancy and Substance Abuse
+689	Premature Babies
+690	Premature Ovarian Failure
+691	Premenstrual Syndrome
+692	Prenatal Care
+693	Prenatal Testing
+694	Preparedness  New
+695	Prescription Drug Abuse
+696	Pressure Sores
+697	Preterm Labor
+698	Progressive Supranuclear Palsy
+699	Prostate Cancer
+700	Prostate Cancer Screening
+701	Prostate Diseases
+702	Psoriasis
+703	Psoriatic Arthritis
+704	Psychotic Disorders
+705	Puberty
+706	Public Health Infrastructure 
+707	Pulmonary Embolism
+708	Pulmonary Fibrosis
+709	Pulmonary Hypertension
+710	Pulmonary Rehabilitation
+711	Quitting Smoking
+712	Rabies
+713	Radiation
+714	Radiation Emergencies
+715	Radiation Exposure
+716	Radiation Therapy
+717	Radon
+718	Rare Diseases
+719	Rashes
+720	Raynaud's Disease
+721	Rectal Disorders
+722	Refractive Errors
+723	Rehabilitation
+724	Reproductive Hazards
+725	Respiratory Diseases 
+726	Respiratory Failure
+727	Respiratory Syncytial Virus Infections
+728	Restless Legs
+729	Retinal Detachment
+730	Rett Syndrome
+731	Retinal Disorders
+732	Reye Syndrome
+733	Rh Incompatibility
+734	Rickets
+735	Rheumatoid Arthritis
+736	Riding roller coasters
+737	Rosacea
+738	Rotator Cuff Injuries
+739	Rotavirus Infections
+740	Rubella
+741	Running marathons
+742	Rural Health Concerns
+743	RVing
+744	Safety
+745	Salivary Gland Cancer
+746	Salivary Gland Disorders
+747	Salmonella Infections
+748	Sarcoidosis
+749	Scabies
+750	Scars
+751	Schizophrenia
+752	School Health
+753	Sciatica
+754	Scleroderma
+755	Scoliosis
+759	Seizures
+763	Sepsis
+767	Sexually Transmitted Diseases
+771	Shoulder Injuries and Disorders
+775	Sjogren's Syndrome
+779	Skin Infections
+783	Sleep Disorders
+787	Smallpox
+791	Snoring
+756	Scuba diving and snorkeling
+760	Self-harm
+764	Sexual Health
+768	Sexually Transmitted Diseases 
+772	Sickle Cell Anemia
+776	Skin Aging
+780	Skin Pigmentation Disorders
+784	Sleep Health 
+788	Smokeless Tobacco
+792	Soccer
+757	Seasonal Affective Disorder
+761	Seniors' Health
+765	Sexual Problems in Men
+769	Shingles
+773	Sinusitis
+777	Skin Cancer
+781	Sleep
+785	Sleep Health  New
+789	Smoking
+793	Social Determinants of Health 
+758	Secondhand Smoke
+762	Sexual Assault
+766	Sexual Problems in Women
+770	Shock
+774	Skiing or snowboarding
+778	Skin Conditions
+782	Sleep Apnea
+786	Small Intestine Disorders
+790	Smoking and Youth
+794	Social Determinants of Health  New
+795	Sodium
+796	Soft Tissue Sarcoma
+797	Sore Throat
+798	Speech and Communication Disorders
+799	Speech and Language Problems in Children
+800	Spelunking (caving)
+801	Spider Bites
+802	Spina Bifida
+803	Spinal Cord Diseases
+804	Spinal Cord Injuries
+805	Spinal Muscular Atrophy
+806	Spinal Stenosis
+807	Spine Injuries and Disorders
+808	Spleen Diseases
+809	Sports Fitness
+810	Sports Injuries
+811	Sports Safety
+812	Sprains and Strains
+813	Staphylococcal Infections
+814	Statins
+815	Stem Cells
+816	Steroids
+817	Stillbirth
+818	Stomach Cancer
+819	Stomach Disorders
+820	Streptococcal Infections
+821	Stress
+822	Stroke
+823	Stroke Rehabilitation
+824	Stuttering
+825	Substance Abuse 
+826	Sudden Infant Death Syndrome
+827	Suicide
+828	Sun Exposure
+829	Surfing and windsurfing
+830	Surgery
+831	Swallowing Disorders
+832	Sweat
+833	Swimming
+834	Syringomyelia
+835	Tailbone Disorders
+836	Syphilis
+837	Talking With Your Doctor
+838	Taste and Smell Disorders
+839	Tay-Sachs Disease
+840	Tears
+841	Teen Development
+842	Teen Mental Health
+843	Teen Health
+844	Teen Sexual Health
+845	Teen Violence
+846	Teenage Pregnancy
+847	Teens' Page
+848	Temporomandibular Joint Dysfunction
+849	Tendinitis
+850	Tennis
+851	Testicular Cancer
+852	Testicular Disorders
+853	Tetanus
+854	Tetanus, Diphtheria, and Pertussis Vaccines
+855	Thalassemia
+856	Thoracic Outlet Syndrome
+857	Throat Cancer
+858	Throat Disorders
+859	Thyroid Cancer
+860	Thymus Cancer
+861	Thyroid Diseases
+862	Thyroid Tests
+863	Tick Bites
+864	Tinea Infections
+865	Tinnitus
+866	Tobacco Use 
+867	Toddler Development
+868	Toddler Nutrition
+869	Toddler Health
+870	Toe Injuries and Disorders
+871	Toilet Training
+872	Tongue Disorders
+873	Tonsils and Adenoids
+874	Tooth Decay
+875	Tooth Disorders
+876	Tornadoes
+877	Tourette Syndrome
+878	Toxoplasmosis
+879	Tracheal Disorders
+880	Transient Ischemic Attack
+881	Traumatic Brain Injury
+882	Traveler's Health
+883	Traveling
+884	Tremor
+885	Trichomoniasis
+886	Trigeminal Neuralgia
+887	Tsunamis
+888	Triglycerides
+889	Tubal Ligation
+890	Tuberculosis
+891	Tuberous Sclerosis
+892	Tumors and Pregnancy
+893	Turner Syndrome
+894	Twins, Triplets, Multiple Births
+895	Ulcerative Colitis
+896	Ultrasound
+897	Uncommon Infant and Newborn Problems
+898	Underage Drinking
+899	Understanding Medical Research
+900	Ureteral Disorders
+901	Urethral Disorders
+902	Urinalysis
+903	Urinary Incontinence
+904	Urinary Tract Infections
+905	Urine and Urination
+906	Usher Syndrome
+907	Uterine Cancer
+908	Uterine Diseases
+909	Uterine Fibroids
+910	Vaginal Bleeding
+911	Vaginal Cancer
+912	Vaginal Diseases
+913	Vaginitis
+914	Valley Fever
+915	Varicose Veins
+916	Vascular Diseases
+917	Vasculitis
+918	Vasectomy
+919	Vegetarian Diet
+920	Veterans and Military Family Health
+921	Veterans and Military Health
+922	Viral Infections
+923	Vision 
+924	Vision Impairment and Blindness
+925	Vital Signs
+926	Vitamin A
+927	Vitamin C
+931	Vitamins
+935	Volleyball
+939	Walking
+943	Water Safety (Recreational)
+947	Weight Loss
+951	Wildfires
+955	Women's Health
+959	X-Rays
+928	Vitamin D
+932	Vitiligo
+936	Von Hippel-Lindau Disease
+940	Warts
+944	Weight Control
+948	Weight Loss Surgery
+952	Wilms Tumor
+956	Women's Health Checkup
+960	Yeast Infections
+929	Vitamin E
+933	Voice Disorders
+937	Vulvar Cancer
+941	Walking Problems
+945	Weight Gain
+949	West Nile Virus
+953	Wilson Disease
+957	Wounds and Injuries
+961	Yoga
+930	Vitamin K
+934	Volcanoes
+938	Vulvar Disorders
+942	Water Pollution
+946	Weight lifting
+950	Whooping Cough
+954	Winter Weather Emergencies
+958	Wrist Injuries and Disorders
+962	Zika Virus
+\.
+
+
+--
+-- Name: in_preference_preference_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.in_preference_preference_id_seq', 962, true);
+
+
+--
+-- Data for Name: in_user_member; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.in_user_member (user_id, birth_date, gender, lang, invite_id, city, state, province, country, zip_code, avatar_url, first_name, middle_name, last_name) FROM stdin;
+2	2017-03-08	M	en-US	SXSW2017	\N	\N	\N	\N	\N	\N	Test	\N	Account
+129	1983-08-15	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Lewis	\N	Farley
+131	1983-08-15	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Lewis	\N	Farley
+133	1980-08-01	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Mark	David	Bakacs
+136	1990-11-03	M	en-US	URwanda	\N	\N	\N	\N	\N	\N	Mike	\N	Hale
+56	1950-10-02	M	en-US	F&FNS1	Kinnelon	NJ	USA	null	07405	null	Vir	null	Madhok
+48	1979-03-02	F	en-US	F&FNS1	San Francisco	CA		null	94122	null	Debbie	null	Madhok
+57	1978-06-24	M	en-US	F&FNS1	null	NY	null	null	null	null	Ricky 	null	Madhok
+58	1977-07-04	F	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Naveena	\N	Madhok
+59	1967-12-06	F	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Randall	S	Anselmo
+9	1991-03-12	M	en-US	096ade7951c39428	\N	\N	\N	\N	\N	\N	Evgeniy	\N	Kozlovtsev
+62	1967-03-24	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Randall	S	Anselmo
+6	1980-03-30	M	en-US	SXSW2017	Austin	TX		null	78736	null	Bo		Vargas
+63	1997-10-03	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Shawn	A	Gupta
+64	1985-05-09	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	amitesh	\N	manchanda
+65	1997-10-03	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Shawn	A	Gupta
+70	1993-03-21	F	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Shama	\N	Gupta
+71	2017-05-16	M	en-US	nbsdac	Delhi	null	null	null	null	null	Demo	null	Account
+10	1983-08-05	M	en-US	d9484d4de664f67c	San Francisco	CA		null	94122	null	Rishi		Madhok
+209	1980-03-30	M	en-US	URwanda	null	TX	null	null	null	null	Bo		Vargas
+138	2198-11-08	M	en-US	URwanda	\N	\N	\N	\N	\N	\N	Joe	\N	Teal
+140	2198-11-08	M	en-US	URwanda	\N	\N	\N	\N	\N	\N	Joe	\N	Teal
+141	1961-11-01	M	en-US	URwanda	\N	\N	\N	\N	\N	\N	Mike	\N	Makuch
+215	2018-02-07	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	test_group	\N	count
+28	1978-07-04	F	en-US	SXSW2017	\N	\N	\N	\N	\N	\N	Debbie	\N	Yeh
+32	1954-02-26	M	en-US	SXSW2017	\N	\N	\N	\N	\N	\N	RISHI	\N	MADHOK
+35	1981-03-09	F	en-US	SXSW2017	\N	\N	\N	\N	\N	\N	Beth	\N	Rossi
+142	1984-07-28	F	en-US	Praise2018	\N	\N	\N	\N	\N	\N	Ilene	\N	Vargad
+36	1981-03-03	F	en-US	SXSW2017	Novi	MI		null	48374	null	Beth	null	Rossi
+3	2017-03-08	M	en-US	SXSW2017	San Diego	CA	San Diego	null	123456	file/1	Sergey		Chikin
+24	1984-07-31	M	en-US	SXSW2017	null	null	null	null	null	null	Mike	null	Poll
+40	2017-04-03	M	en-US	SXSW2017	\N	\N	\N	\N	\N	\N	Test	\N	01
+41	1983-03-29	M	en-US	SXSW2017	\N	\N	\N	\N	\N	\N	Mike	\N	Larry
+72	1974-08-02	F	en-US	F&FNS1	Chicago	IL	Illinois	null	60647	null	Jane	Marie	Smith
+145	1984-07-28	F	en-US	Praise2018	\N	\N	\N	\N	\N	\N	Ilene	\N	Vargad
+146	1981-06-25	F	en-US	Praise2018	\N	\N	\N	\N	\N	\N	Wuanda 	\N	Vargas
+148	2004-02-08	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Jogi	\N	naidu
+73	1997-10-03	M	en-US	F&FNS1	Cranbury	NJ	Middlesex	null	08512	null	Shawn	A	Gupta
+150	2010-01-05	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	QA	\N	Jogi
+74	1984-07-28	M	en-US	F&FNS1	Chicago	IL		null	60647	null	Darrin	null	Shillair
+75	1990-08-23	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Maxim	Mikhailovich	Chepel
+78	2017-10-29	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Prakash	\N	Vemulapalli
+42	1982-08-01	F	en-US	SXSW2017	Chicago	IL		null	60647	null	Dre		Kaltz
+43	1972-10-05	M	en-US	SXSW2017	\N	\N	\N	\N	\N	\N	Thomas	L	Castle
+46	2017-04-19	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Sergey	\N	Chikin
+47	2017-04-09	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Rishi	\N	Madhok
+80	1972-10-05	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Thomas	\N	Castle
+49	2017-05-31	F	en-US	F&FNS1	manhattan	NY	null	null	11211	null	Anthony	John	Coscio
+50	2000-01-01	F	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Jessica 	\N	Uganda
+51	1982-12-12	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Sarabpreet	\N	Singh
+53	1982-12-12	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Sarabpreet 	\N	Singh
+91	1986-05-15	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Alex	\N	Efimov
+93	1997-10-03	M	en-US	URwanda	\N	\N	\N	\N	\N	\N	Shawn	\N	Gupta
+94	1997-10-03	M	en-US	URwanda	\N	\N	\N	\N	\N	\N	Shawn	\N	Gupta
+95	1980-05-30	M	en-US	URwanda	\N	\N	\N	\N	\N	\N	Joe	\N	Bahl
+151	2017-05-08	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Jogi	\N	Naidu
+55	2017-05-04	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Joseph	\N	Accursio
+154	2006-05-29	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	QA	\N	Jogi
+96	1980-05-30	M	en-US	URwanda	\N	\N	\N	\N	\N	\N	Joe	\N	Bahl
+99	1997-10-03	M	en-US	URwanda	\N	\N	\N	\N	\N	\N	Shawn	A	Gupta
+102	1997-10-03	M	en-US	URwanda	\N	\N	\N	\N	\N	\N	Shawn	A	Gupta
+104	1997-10-03	M	en-US	URwanda	\N	\N	\N	\N	\N	\N	Shawn	A	Gupta
+105	1997-10-07	F	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Jane	A	Doe
+107	1992-10-15	F	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Shirley	\N	Goat
+210	2018-01-31	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Test_21_Feb	\N	test
+108	1991-12-01	F	en-US	URwanda	\N	\N	\N	\N	\N	\N	Billy	Bob	Joe
+110	2001-06-18	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	A	\N	Ef
+112	1990-07-13	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Shobhnit 	\N	Kapoor
+114	1990-07-13	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Shobhnit 	\N	Kapoor
+116	1975-08-22	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	KARL	\N	FERNANDEZ
+122	1993-01-13	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	James	B	Monroe 
+125	1993-01-13	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	James	B	Monroe 
+127	1993-01-13	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	James	B	Monroe 
+168	2006-05-29	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	QA	\N	Jogi
+176	2006-05-29	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	QA	\N	Jogi
+178	2016-02-27	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	jo	Naidu1	Naidu
+179	1989-12-08	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	idris	\N	jafer
+181	1989-12-08	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	idris	\N	jafer
+183	2018-01-16	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	nanda	\N	kishore
+185	2018-01-16	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	nanda	\N	kishore
+52	1983-08-05	M	en-US	F&FNS1	null	CA	null	usa	null	file/47	Jose		Rameriez
+211	1983-08-05	M	en-US	URwanda	\N	\N	\N	\N	\N	\N	Rishi	\N	Madhok
+214	1984-10-29	M	en-US	ee029d28decd6e4e	\N	\N	\N	\N	\N	\N	Prakash	\N	Vemulapalli
+217	2018-03-05	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	test	\N	dd
+26	1982-08-02	F	en-US	SXSW2017	Chicago	IL		null	60647	file/55	Andrea	Renee	Kaltz
+220	2000-03-23	F	en-US	504b49519efcb860	\N	\N	\N	\N	\N	file/56	Katy	\N	Gingham
+221	1974-03-07	M	en-US	dcf0c7022c2c3a98	\N	\N	\N	\N	\N	file/57	Matthew	\N	Patience
+223	1981-02-10	M	en-US	URwanda	\N	\N	\N	\N	\N	\N	Stephen	\N	Roux
+224	2018-02-06	F	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	Group 	\N	test
+216	2018-02-05	M	en-US	F&FNS1	\N	\N	\N	\N	\N	\N	TestAccount1	\N	TestAccount
+\.
+
+
+--
+-- Data for Name: in_user_preferences; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.in_user_preferences (user_id, preference_id) FROM stdin;
+3	11
+3	94
+3	54
+41	5
+41	8
+41	741
+41	337
+41	486
+26	10
+26	11
+49	5
+62	245
+62	500
+71	5
+71	6
+71	9
+71	10
+72	7
+72	10
+74	5
+74	245
+74	591
+75	74
+75	536
+75	827
+6	5
+52	4
+52	6
+52	337
+52	421
+209	5
+214	5
+214	7
+214	10
+214	12
+215	4
+215	5
+215	6
+215	7
+215	8
+215	9
+215	10
+215	11
+215	12
+215	13
+220	260
+\.
+
+
+--
+-- Data for Name: in_user_provider; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.in_user_provider (user_id, birth_date, gender, lang, invite_id, avatar_url, first_name, middle_name, last_name, location, timezone, address, zip_code, city, country, phone_number, speciality, npi_number, state_licensed, dea_number, board_certifications, medical_license, state) FROM stdin;
+4	2017-03-10	M	en-US	NS1medicalMarch	\N	John	Provider	Smith	test	GMT-2	test	test	test	usas	test	MD	test	test	test	test	test	Unspecified
+7	1991-03-12	M	en-US	NS1medicalMarch	\N	Evgeniy	\N	Kozlovtsev	NY	GMT-2	1	1	1	usas	1	MD	1	1	1	1	1	Unspecified
+8	1983-08-05	M	en-US	NS1medicalMarch	null	Rishi	 	Madhok	San Francisco, CA	est	2390 Noriega St	94122	San Francisco	usa	9084215504	therapist	-		-			Unspecified
+197	2018-02-22	M	en-US	NS1medicalMarch	\N	test	test	test	nn	GMT-10	Shreya Serinity, Flat: M5, 5th floor, Nanakramguda, Gachibowli, 500008	500008	Hyderabad	usas	9700865200	MD	nn	nn	nn	nn	deprecated	LA
+5	2017-03-10	M	en-US	NS1medicalMarch	null	Test		test3	tttt	GMT-2	ttt	ttt	ttt	usas	ttt	DO	ttt	ttt	ttt	ttt	ttt	Unspecified
+14	2017-02-27	M	en-US	NS1medicalMarch	\N	Rishi	\N	Madhok	.	GMT	L	L	Sf	usas	9084215504	MD	J	J	J	H	K	CA
+17	2017-02-28	M	en-US	NS1medicalMarch	\N	1	\N	1	1	GMT+1	1	1	1	usas	1	MD	1	1	1	1	1	AZ
+18	1991-03-12	M	en-US	NS1medicalMarch	\N	Evgeniy	\N	Kozlovtsev	Home	GMT+3	Nilla st., 19	188640	Ostin	usas	+79111339801	MD	123	Texas	123	1	1	TX
+19	1991-03-12	M	en-US	NS1medicalMarch	\N	Jeremy 	\N	Wheelks	Home	GMT+3	Nilla st., 19	188640	Ostin	usas	+79111339801	MD	123	Texas	123	1	1	TX
+22	1952-07-28	M	en-US	NS1medicalMarch	\N	William	Martin	Jantsch	Philadelphia PA	GMT-5	233 S 6th St #2301	19106	Philadelphia	usas	7405077434	MD	###	PA	###	Emergency Medicine\nInternal Medicine	###	PA
+208	1983-02-02	M	en-US	NS1medicalMarch	\N	Rishi	\N	Madhok	kjlkj	GMT-11	1753 47th Ave	94122	San Francisco	usa	9084215504	MD	tjdyjd	CA	dtjdtj	djtdjtd	deprecated	CA
+76	1983-08-05	M	en-US	NS1medicalMarch	\N	Rishi	\N	Madhok	San Francisco	GMT-12	2709 Noriega St.	94122	San Francisco	usas	9084215504	MD	.	.	.	.	deprecated	CA
+82	1983-08-05	M	en-US	NS1medicalMarch	\N	Rishi	\N	Madhok	San Francisco 	GMT-11	2709 Noriega St.	94122	San Francisco	usas	9084215504	MD	.	CA	.	.	deprecated	CA
+83	1983-08-05	M	en-US	NS1medicalMarch	\N	Rishi	\N	Madhok	San Francisco 	GMT-11	2709 Noriega St.	94122	San Francisco	usas	9084215504	MD	.	CA	.	.	deprecated	CA
+87	1983-08-05	M	en-US	NS1medicalMarch	\N	Rishi	\N	Madhok	.	GMT-12	.	.	.	usas	.	MD	.	.	.	.	deprecated	CA
+27	1989-01-01	M	en-US	NS1medicalMarch	null	Joseph		Accursio	NP	GMT+1	--	-	-	usas	-	NP	-	--	-	-	-	AL
+30	1970-11-28	F	en-US	NS1medicalMarch	\N	Traci	\N	French	US	GMT-5	404 E 9th Ave	76513	Belton	usas	417.496.0498	MD	1801842414	AR, MO	###	American Board of Family Medicine	###	TX
+33	1976-01-15	M	en-US	NS1medicalMarch	\N	Nathaniel	\N	Greenwood	Austin, Texas	GMT-6	201 VP Ranch Dr.	78628	Georgetown	usas	5127733510	MD	1770798563	P2863	fg0062909	ABEM	deprecated	TX
+38	1961-05-20	F	en-US	NS1medicalMarch	\N	Allison	\N	Godchaux	Kansas	GMT+3	623 Lake Forest	66012	Bonner Springs	usas	9134491611	NP	####	MO/KS	####	Family Practice	deprecated	KS
+89	1983-08-05	M	en-US	NS1medicalMarch	\N	Rishi	\N	Madhok	San Francisco 	GMT-12	.	..	.	usas	.	MD	.	.	.	..	deprecated	CA
+135	1983-08-03	M	en-US	NS1medicalMarch	\N	Rishi	\N	Madhok	k	GMT-9	k	k	k	usas	k	MD	k	k	k	k	deprecated	KS
+198	2018-02-16	M	en-US	NS1medicalMarch	\N	signuptest	\N	test	NA	GMT-11	Shreya Serinity, Flat: M5, 5th floor, Nanakramguda, Gachibowli, 500008	500008	Hyderabad	usas	9700865200	MD	NA	NA	NA	NA	deprecated	AK
+199	2018-02-23	M	en-US	NS1medicalMarch	\N	signup	\N	test	test	GMT-12	test	984321	test	usas	9700865200	MD	Na	NA	NA	NA	deprecated	AL
+29	1970-11-28	F	en-US	NS1medicalMarch	null	Traci	L	French	US	GMT-5	3809 S General Bruce Dr #A103	76502	Temple	usa	417.496.0498	MD	###	AR, MO, TX	###	American Board of Family Medicine	###	TX
+37	1966-06-21	M	en-US	NS1medicalMarch	null	Mike	A	Polich	IN	GMT-5	792 Carriage Drive	46356	Lowell	usas	2193136351	NP	xxx	xxx	xxx	FNP-BC	1	IN
+39	1967-03-24	M	en-US	NS1medicalMarch	\N	Randall	S	Anselmo	VT	GMT-5	574 Ore Bed Rd	05257	North Bennington	usas	8024477959	MD	###	###	###	American Board of Family Medicine	deprecated	VT
+188	2018-02-06	M	en-US	NS1medicalMarch	\N	Nanda	\N	kishore	india	GMT-5	hyderabad	500008	hyderabad	usas	9700865200	NP	NA	NA	NA	NA	deprecated	AL
+190	2018-02-28	M	en-US	NS1medicalMarch	\N	nanda	\N	kishore	hyderabadtest	GMT-11	hyderababd	984321	Fullerton 	usas	9999999999	NP	NA	NA	NA	NA	deprecated	CA
+191	2018-01-31	M	en-US	NS1medicalMarch	\N	Nanda	\N	kishore	test	GMT-11	test	984321	Fullerton 	usas	99	NP	a	a	a	a	deprecated	CA
+203	1983-03-01	M	en-US	NS1medicalMarch	\N	Rishi	\N	Madhok	afeaef	GMT-11	aefaef	654684641	aefaef	usas	6a4684684	MD	545684846	57574684	646465	6468468468	deprecated	AZ
+44	1983-08-02	F	en-US	NS1medicalMarch	null	Doc		Kaltz	Chicago	GMT-5	2532 W Lyndale	60647	Chicago	usas	2489210812	MD	1234	IL	1234	ABCD	1	IL
+194	2018-01-29	M	en-US	NS1medicalMarch	\N	nanda3	\N	test	test	GMT-12	nfullerto	984321	Fullerton 	usas	9700865200	MD	NA	NA	NA	NA	deprecated	LA
+195	2018-02-06	M	en-US	NS1medicalMarch	\N	protest1	\N	test	fullerton	GMT-12	fullerton	984321	Fullerton 	usas	9700865200	MD	test	test	test	test	deprecated	CA
+196	2018-02-07	M	en-US	NS1medicalMarch	\N	test	\N	test	test	GMT-11	kk	kk	kk	usas	kk	MD	kk	kk	kk	na	deprecated	KY
+204	2018-02-27	M	en-US	NS1medicalMarch	\N	test	test	test	da	GMT-11	dsd	dasd	dsad	usas	dsadasd	MD	sdf	ds	saasd	dasdasd	deprecated	AL
+205	2018-02-27	M	en-US	NS1medicalMarch	\N	dss	ss	dasd	dasd	GMT-12	addad	dasd	dasda	usas	asdasd	MD	dadsd	dasd	dasdad	dasdasd	deprecated	AK
+206	2018-02-20	M	en-US	NS1medicalMarch	\N	test	test	ets	ndasdd	GMT-12	dwas	dasd	dasd	usas	dassdasd	NP	adsa	dasd	swdasd	dasd	deprecated	AL
+207	1983-01-31	M	en-US	NS1medicalMarch	\N	Rishi	\N	Madhok	jlkjlkj	GMT-11	1753 47th Ave	94122	San Francisco	usas	9084215504	MD	aefaefa	CA	aefaef	aefaefaef	deprecated	CA
+213	1984-10-29	M	en-US	NS1medicalMarch	\N	Prakash	\N	Vemulapalli	Carlsbad, California	GMT-8	7036 Sitio Frontera	92009	Carlsbad	usas	9378250029	MD	1952677395	California, New York	FV6009674	emergency medicine	deprecated	CA
+193	2018-01-31	M	en-US	NS1medicalMarch	\N	Nanda		Kishore1	fulllert	GMT-12	fullerton	984321	Fullerton 	usas	9700865200	NP	NA	NA	NA	NA	deprecated	KS
+222	2018-02-06	M	en-US	NS1medicalMarch	\N	test	\N	test	dsadasd	GMT-11	fullerton	984321	Fullerton 	usas	9700865200	NP	NA	NA	NA	Test	deprecated	AK
+34	1974-10-30	F	en-US	NS1medicalMarch	null	Komal	null	Hanif	New York	GMT-4	2 North 6th Street	11249	Brooklyn	usa	9172250673	MD	1922440163	FL, MI, MO, NY	FH6391801	AAFP	deprecated	NY
+\.
+
+
+--
+-- Name: in_condition in_condition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_condition
+    ADD CONSTRAINT in_condition_pkey PRIMARY KEY (condition_id);
+
+
+--
+-- Name: in_history in_history_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_history
+    ADD CONSTRAINT in_history_pkey PRIMARY KEY (user_id, condition_id);
+
+
+--
+-- Name: in_invites in_invites_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_invites
+    ADD CONSTRAINT in_invites_pkey PRIMARY KEY (invite_id);
+
+
+--
+-- Name: in_preference in_preference_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_preference
+    ADD CONSTRAINT in_preference_pkey PRIMARY KEY (preference_id);
+
+
+--
+-- Name: in_user_member in_user_member_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_user_member
+    ADD CONSTRAINT in_user_member_pkey PRIMARY KEY (user_id);
+
+
+--
+-- Name: in_user_preferences in_user_preferences_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_user_preferences
+    ADD CONSTRAINT in_user_preferences_pkey PRIMARY KEY (user_id, preference_id);
+
+
+--
+-- Name: in_user_provider in_user_provider_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_user_provider
+    ADD CONSTRAINT in_user_provider_pkey PRIMARY KEY (user_id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+

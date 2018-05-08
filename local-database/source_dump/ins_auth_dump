@@ -1,0 +1,295 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.6.6
+-- Dumped by pg_dump version 9.6.8
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: in_apps; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.in_apps (
+    app_id bigint NOT NULL,
+    client_id text NOT NULL,
+    client_secret text NOT NULL,
+    redirect_uri text NOT NULL,
+    flags bigint DEFAULT 0 NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: in_apps_app_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.in_apps_app_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: in_apps_app_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.in_apps_app_id_seq OWNED BY public.in_apps.app_id;
+
+
+--
+-- Name: in_apps_granted_permissions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.in_apps_granted_permissions (
+    app_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    permission text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: in_user_roles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.in_user_roles (
+    role_id integer NOT NULL,
+    level smallint NOT NULL,
+    label text NOT NULL
+);
+
+
+--
+-- Name: in_user_roles_role_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.in_user_roles_role_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: in_user_roles_role_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.in_user_roles_role_id_seq OWNED BY public.in_user_roles.role_id;
+
+
+--
+-- Name: in_users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.in_users (
+    user_id bigint NOT NULL,
+    username text,
+    email_address text,
+    passhash character(60) DEFAULT NULL::bpchar,
+    user_type smallint NOT NULL,
+    role_id integer NOT NULL,
+    verification_code text NOT NULL,
+    verified_at timestamp with time zone,
+    last_seen_at timestamp without time zone,
+    last_login_at timestamp without time zone,
+    forgot_valid_to timestamp without time zone,
+    forgot_code text,
+    prev_login_at timestamp without time zone
+);
+
+
+--
+-- Name: in_users_facebook; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.in_users_facebook (
+    user_id bigint NOT NULL,
+    facebook_id bigint NOT NULL
+);
+
+
+--
+-- Name: in_users_twitter; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.in_users_twitter (
+    user_id bigint NOT NULL,
+    twitter_id bigint NOT NULL
+);
+
+
+--
+-- Name: in_users_user_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.in_users_user_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: in_users_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.in_users_user_id_seq OWNED BY public.in_users.user_id;
+
+
+--
+-- Name: in_apps app_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_apps ALTER COLUMN app_id SET DEFAULT nextval('public.in_apps_app_id_seq'::regclass);
+
+
+--
+-- Name: in_user_roles role_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_user_roles ALTER COLUMN role_id SET DEFAULT nextval('public.in_user_roles_role_id_seq'::regclass);
+
+
+--
+-- Name: in_users user_id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_users ALTER COLUMN user_id SET DEFAULT nextval('public.in_users_user_id_seq'::regclass);
+
+
+--
+-- Name: in_apps_granted_permissions in_apps_granted_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_apps_granted_permissions
+    ADD CONSTRAINT in_apps_granted_permissions_pkey PRIMARY KEY (app_id, user_id, permission);
+
+
+--
+-- Name: in_apps in_apps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_apps
+    ADD CONSTRAINT in_apps_pkey PRIMARY KEY (app_id);
+
+
+--
+-- Name: in_user_roles in_user_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_user_roles
+    ADD CONSTRAINT in_user_roles_pkey PRIMARY KEY (role_id);
+
+
+--
+-- Name: in_users in_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_users
+    ADD CONSTRAINT in_users_pkey PRIMARY KEY (user_id);
+
+
+--
+-- Name: in_i_unique_client_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX in_i_unique_client_id ON public.in_apps USING btree (client_id, client_secret);
+
+
+--
+-- Name: in_i_unique_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX in_i_unique_email ON public.in_users USING btree (email_address);
+
+
+--
+-- Name: in_i_unique_facebook; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX in_i_unique_facebook ON public.in_users_facebook USING btree (facebook_id);
+
+
+--
+-- Name: in_i_unique_twitter; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX in_i_unique_twitter ON public.in_users_twitter USING btree (twitter_id);
+
+
+--
+-- Name: in_apps_granted_permissions in_apps_granted_permissions_app_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_apps_granted_permissions
+    ADD CONSTRAINT in_apps_granted_permissions_app_id_fkey FOREIGN KEY (app_id) REFERENCES public.in_apps(app_id) ON DELETE CASCADE;
+
+
+--
+-- Name: in_apps_granted_permissions in_apps_granted_permissions_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_apps_granted_permissions
+    ADD CONSTRAINT in_apps_granted_permissions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.in_users(user_id) ON DELETE CASCADE;
+
+
+--
+-- Name: in_users_facebook in_users_facebook_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_users_facebook
+    ADD CONSTRAINT in_users_facebook_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.in_users(user_id) ON DELETE CASCADE;
+
+
+--
+-- Name: in_users in_users_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_users
+    ADD CONSTRAINT in_users_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.in_user_roles(role_id) ON DELETE RESTRICT;
+
+
+--
+-- Name: in_users_twitter in_users_twitter_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.in_users_twitter
+    ADD CONSTRAINT in_users_twitter_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.in_users(user_id) ON DELETE CASCADE;
+
+
+--
+-- PostgreSQL database dump complete
+--
+

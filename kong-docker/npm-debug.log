@@ -1,15 +1,16 @@
 0 info it worked if it ends with ok
 1 verbose cli [ '/home/nanda/.nvm/versions/node/v6.12.2/bin/node',
 1 verbose cli   '/home/nanda/.nvm/versions/node/v6.12.2/bin/npm',
-1 verbose cli   'start' ]
+1 verbose cli   'run',
+1 verbose cli   'dev' ]
 2 info using npm@3.10.10
 3 info using node@v6.12.2
 4 verbose config Skipping project config: /home/nanda/.npmrc. (matches userconfig)
 5 verbose stack Error: ENOENT: no such file or directory, open '/home/nanda/package.json'
 5 verbose stack     at Error (native)
 6 verbose cwd /home/nanda/Documents/nsighter/kong-custom
-7 error Linux 4.13.0-39-generic
-8 error argv "/home/nanda/.nvm/versions/node/v6.12.2/bin/node" "/home/nanda/.nvm/versions/node/v6.12.2/bin/npm" "start"
+7 error Linux 4.13.0-38-generic
+8 error argv "/home/nanda/.nvm/versions/node/v6.12.2/bin/node" "/home/nanda/.nvm/versions/node/v6.12.2/bin/npm" "run" "dev"
 9 error node v6.12.2
 10 error npm  v3.10.10
 11 error path /home/nanda/package.json
